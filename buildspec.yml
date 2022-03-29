@@ -1,0 +1,35 @@
+version: 0.2
+
+env:
+phases:
+  install:
+    commands:
+      - apt-get update -y
+      - npm i -g yarn
+      - yarn
+    finally:
+      - echo Install Done.
+  pre_build:
+    commands:
+      - echo PreBuild Start.
+    finally:
+      - echo PreBuild Done.
+  build:
+    commands:
+      - yarn build
+    finally:
+      - echo Build Done.
+  post_build:
+    commands:
+      - echo PostBuild Start.
+    finally:
+      - echo PostBuild Done.
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: build
+
+cache:
+  paths:
+    - 'node_modules/**/*'
