@@ -5,6 +5,7 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import ExploreIcon from '@mui/icons-material/Explore';
 import GroupIcon from '@mui/icons-material/Group';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import { Badge } from '@mui/material';
 
 export interface IBottomNavigation {
     currentActive: string;
@@ -28,7 +29,7 @@ export default function Navigation({ currentActive, changeHandler }: IBottomNavi
       <BottomNavigationAction
         label="Management"
         value="management"
-        icon={<GroupIcon />}
+        icon={<Badge color="primary" badgeContent={10}><GroupIcon /></Badge>}
       />
       <BottomNavigationAction
         label="Profile"

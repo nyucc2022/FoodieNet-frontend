@@ -15,7 +15,7 @@ export default function Landing() {
             </Typography>
         </Box>
         <Box component="span" sx={{ display: 'flex', p: 2, marginTop: 25, width: '100%', justifyContent: 'center' }}>
-            <Button sx={{ border: '1px dashed grey', padding: '10px 28px' }} component={Link} to="/dashboard/explore" >Explore Now</Button>
+            <Button sx={{ border: '1px dashed grey', padding: '10px 28px' }} component={Link} to="/dashboard/explore">Explore Now</Button>
         </Box>
     </BaseContainer>);
 }
