@@ -16,7 +16,7 @@ interface IChatCard {
 
 export default function ChatCard({ data, classNames='', style={} }: IChatCard) {
     const archived = data.state === 'completed';
-    const unread = Math.floor(Math.random() * (!archived ? 10 : 0));
+    const unread = Math.floor(Math.random() * (!archived ? data.groupId : 0));
     const navigate = useNavigate();
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

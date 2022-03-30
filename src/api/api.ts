@@ -4,21 +4,43 @@ export const choose = <T>(list: T[] | string) => {
     return list[Math.floor(Math.random() * list.length)];
 }
 
+export const sleep = (timeout: number): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, timeout);
+    });
+}
+
+export const getMe = (): Interface.IUser => {
+    return {
+        id: 0,
+        name: 'Self',
+    };
+}
+
+export const isMe = (user?: Interface.IUser): boolean => {
+    return getMe().id === user?.id;
+}
+
 // TODO: mock data
 export const getChatGroups = async (): Promise<Interface.IGroupInfo[]> => {
-    return Array(25).fill(0).map((_, i) => ({
-        groupId: i,
-        state: Math.random() < 0.5 ? 'completed' : 'inprogress',
-        groupName: `Random Group ${i+1}`,
+    return Promise.all(Array(25).fill(0).map((_, i) => getChatGroupById(i)));
+}
+
+export const getChatGroupById = async (groupId: number): Promise<Interface.IGroupInfo> => {
+    return {
+        groupId,
+        state: groupId % 2 ? 'completed' : 'inprogress',
+        groupName: `Random Group ${groupId}`,
         totalParticipants: 8,
         currentParticipants: 8,
         rated: [],
+        participants: await getGroupUsers(groupId),
         restaurant: {
             name: 'Some Restaurant',
             address: '5 MetroTech Center',
             zipCode: 11201,
         },
-    }));
+    };
 }
 
 const chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
@@ -34,16 +56,27 @@ export const genRandomWords = (length: number) => {
     return words;
 }
 
+const users = ['Self', 'Sam', 'Jack', 'Peter', 'Alex'];
+
 // TODO: mock data
 export const getMessages = async (groupId: number): Promise<Interface.IChatInfo> => {
-    const users = ['Sam', 'Jack', 'Self', 'Peter', 'Alex'];
     return {
         groupId,
         messages: Array(25).fill(0).map(() => choose(users)).map((sender, i) => ({
-            sender,
+            sender: {
+                name: sender,
+                id: users.indexOf(sender),
+            },
             text: genRandomWords(12),
             messageId: 1+i,
-            isMe: sender === 'Self',
         })),
     }
+}
+
+// TODO: mock data
+export const getGroupUsers = async (groupId: number): Promise<Interface.IUser[]> => {
+    return users.map((u, i) => ({
+        id: i,
+        name: u,
+    }));
 }

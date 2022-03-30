@@ -1,29 +1,48 @@
 import { Send } from '@mui/icons-material';
 import { Box, Button, TextField } from '@mui/material';
 import * as React from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
-import { getMessages } from '../../../api/api';
-import { IChatInfo } from '../../../api/interface';
+import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
+import { getChatGroupById, getMessages, isMe as isMeApi, sleep } from '../../../api/api';
+import { IChatInfo, IGroupInfo } from '../../../api/interface';
+import AppContext from '../../../api/state';
 
 import Title from '../../../components/title';
+import RatingDialog from './rating';
 
+let init = 0;
 export default function ChatRoom() {
+    const navigate = useNavigate();
     const location = useLocation();
 
     const matches = matchRoutes([{ path: '/dashboard/chat/:groupId' }], location);
     const groupId = parseInt(matches?.[0].params.groupId!, 10) || 0;
 
+    const ctx = React.useContext(AppContext);
     const [input, setInput] = React.useState<string>('');
     const [data, setData] = React.useState<IChatInfo | null>(null);
+    const [groupData, setGroupData] = React.useState<IGroupInfo | null>(null);
+    const [ratingOpen, setRatingOpen] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         (async () => {
+            ctx.setBackDropStatus(true);
+            await sleep(1000);
+            const groupData = await getChatGroupById(groupId);
             setData(await getMessages(groupId));
+            setGroupData(groupData);
+            setRatingOpen(groupData?.state === 'completed' && !groupData?.rated?.includes(0));
+            ctx.setBackDropStatus(false);
         })();
+    // eslint-disable-next-line
     }, [groupId]);
 
     React.useEffect(() => {
+        init += 1;
+        if (init <= 2) {
+            return;
+        }
         toBottom();
+    // eslint-disable-next-line
     }, [data]);
     
     const titleRef = React.useRef<HTMLDivElement>(null);
@@ -35,8 +54,10 @@ export default function ChatRoom() {
         if (input) {
             data?.messages.push({
                 messageId: Date.now(),
-                sender: 'Self',
-                isMe: true,
+                sender: {
+                    id: 0,
+                    name: 'Self',
+                },
                 text: input,
             });
             setData({...data} as IChatInfo);
@@ -44,14 +65,28 @@ export default function ChatRoom() {
         }
     }
 
-    let lastUser: string = '';
+    const handleRateClose = async (data: { [name: number]: number } | null) => {
+        setRatingOpen(false);
+        if (!data) {
+            navigate(`/dashboard/management`);
+        } else {
+            // TODO: submit rate
+            ctx.setBackDropStatus(true);
+            await sleep(1000);
+            ctx.setBackDropStatus(false);
+        }
+    }
+
+    let lastUserId: number = -1;
 
     return (<>
         <Title innerRef={titleRef}>{`ChatRoom: ${groupId}`}</Title>
         <Box sx={{ padding: 2, marginTop: -2, paddingBottom: '60px', display: 'flex', flexDirection: 'column' }}>
             {data?.messages.map(msg => {
-                const sameUser = lastUser === msg.sender;
-                lastUser = msg.sender;
+                const isMe = isMeApi(msg.sender);
+                const sameUser = lastUserId === msg.sender.id;
+                lastUserId = msg.sender.id;
+
                 return (<Box
                     key={msg.messageId}
                     sx={{
@@ -60,8 +95,8 @@ export default function ChatRoom() {
                         flexDirection: 'column',
                         maxWidth: '100%',
                         width: 'max-content',
-                        alignSelf: msg.isMe ? 'end' : 'inherit',
-                        alignItems: msg.isMe ? 'end' : 'inherit',
+                        alignSelf: isMe ? 'end' : 'inherit',
+                        alignItems: isMe ? 'end' : 'inherit',
                     }}
                 >
                     {!sameUser ?
@@ -71,9 +106,9 @@ export default function ChatRoom() {
                             color: 'rgba(0, 0, 0, 0.7)',
                             fontSize: 12,
                             fontWeight: 600
-                        }}>{msg.sender}</Box>) : null}
+                        }}>{msg.sender.name}</Box>) : null}
                     <Box sx={{
-                        background: msg.isMe ? 'rgb(46, 125, 50)' : '#556cd6',
+                        background: isMe ? 'rgb(46, 125, 50)' : '#556cd6',
                         borderRadius: '16px',
                         color: 'white',
                         padding: '8px 12px',
@@ -84,7 +119,7 @@ export default function ChatRoom() {
                 </Box>)
             }) || null}
         </Box>
-        <Box sx={{ display: 'flex', padding: 1, paddingLeft: 2, paddingRight: 2, position: 'fixed', left: 0, width: '100%', bottom: 55, background: 'white', zIndex: 1 }}>
+        <Box sx={{ display: 'flex', padding: 1, paddingLeft: 2, paddingRight: 2, position: 'fixed', left: 0, width: '100%', bottom: 55, background: 'white', zIndex: 2 }}>
             <TextField
                 sx={{ flex: 1 }}
                 size="small"
@@ -97,5 +132,10 @@ export default function ChatRoom() {
                 <Send />
             </Button>
         </Box>
+        <RatingDialog
+            open={ratingOpen}
+            users={groupData?.participants || []}
+            handleClose={handleRateClose}
+        />
     </>);
 }

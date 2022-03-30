@@ -10,15 +10,20 @@ export interface IGroupInfo {
     groupName: string;
     totalParticipants: number;
     currentParticipants: number;
+    participants: IUser[];
     rated: number[];
     restaurant: IRestaurant;
 }
 
+export interface IUser {
+    name: string;
+    id: number;
+}
+
 export interface IMessage {
-    sender: string;
+    sender: IUser;
     text: string;
     messageId: number;
-    isMe?: boolean;
 }
 
 export interface IChatInfo {

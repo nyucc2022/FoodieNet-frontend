@@ -28,6 +28,7 @@ export default function Dashboard() {
         if (urlTag !== tag) {
             setTag(urlTag);
         }
+    // eslint-disable-next-line
     }, [urlTag]);
 
     const changeHandler = (newTag: string) => {
@@ -57,7 +58,7 @@ export default function Dashboard() {
         </BaseContainer>
         {
             withInDashboardPage ?
-            (<Box sx={{ position: 'fixed', right: 30, bottom: 80, zIndex: 1 }}>
+            (<Box sx={{ position: 'fixed', right: 30, bottom: 80, zIndex: 2 }}>
                 <Fab color="primary" aria-label="create group" component={Link} to="/dashboard/create">
                     <AddIcon />
                 </Fab>
