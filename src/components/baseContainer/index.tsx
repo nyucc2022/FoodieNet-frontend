@@ -3,7 +3,7 @@ import * as React from 'react';
 interface IBaseContainer {
     classNames?: string;
     style?: any;
-    children: React.ReactElement;
+    children: JSX.Element | JSX.Element[];
 }
 
 export default function BaseContainer({ children, classNames='', style={} }: IBaseContainer) {

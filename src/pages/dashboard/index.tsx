@@ -16,7 +16,7 @@ export default function Dashboard() {
     const location = useLocation();
 
     const matches = matchRoutes([{ path: '/dashboard/:tag' }], location);
-    const urlTag = matches ? matches[0].params.tag : '';
+    const urlTag = matches?.[0].params.tag || '';
     
     useEffect(() => {
         if (urlTag !== tag) {
@@ -24,7 +24,7 @@ export default function Dashboard() {
         }
     }, []);
 
-    const changeHandler = newTag => {
+    const changeHandler = (newTag: string) => {
         setTag(newTag);
         navigate(`/dashboard/${newTag}`);
     }
