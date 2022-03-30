@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import Title from '../../../components/title';
+
 export default function Profile() {
-    return (<h1>Profile</h1>);
+    return (<Title>Profile</Title>);
 }

@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import Title from '../../../components/title';
+
 export default function Explore() {
-    return (<h1>Explore</h1>);
+    return (<Title>Explore</Title>);
 }

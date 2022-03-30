@@ -14,3 +14,7 @@ code {
   width: 100vw;
   overflow: hidden;
 }
+
+.base-h1 {
+  margin: 1.4rem 1.6rem;
+}
