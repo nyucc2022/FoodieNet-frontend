@@ -36,11 +36,18 @@ export const getChatGroupById = async (groupId: number): Promise<Interface.IGrou
         rated: [],
         participants: await getGroupUsers(groupId),
         restaurant: {
-            name: 'Some Restaurant',
+            id: genRandomWords(1),
+            name: `${genRandomWords(2)} Restaurant`,
+            cuisine: 'Japanese',
             address: '5 MetroTech Center',
             zipCode: 11201,
+            image: '',
         },
     };
+}
+
+export const searchRestaurant = async (keyword: string): Promise<Interface.IRestaurant[]> => {
+    return Promise.all(Array(10).fill(0).map(i => getChatGroupById(i))).then(x => x.map(c => c.restaurant));
 }
 
 const chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";

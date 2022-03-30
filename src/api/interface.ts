@@ -1,7 +1,10 @@
 export interface IRestaurant {
+    id: string;
+    cuisine: string;
     name: string;
     address: string;
     zipCode: number;
+    image: string;
 }
 
 export interface IGroupInfo {

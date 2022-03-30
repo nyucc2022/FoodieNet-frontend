@@ -24,6 +24,7 @@ export default function ChatRoom() {
     const [ratingOpen, setRatingOpen] = React.useState<boolean>(false);
 
     React.useEffect(() => {
+        init = 0;
         (async () => {
             ctx.setBackDropStatus(true);
             await sleep(1000);

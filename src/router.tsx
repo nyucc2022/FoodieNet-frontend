@@ -3,14 +3,30 @@ import { Route, Routes } from 'react-router-dom';
 
 import Landing from './pages/landing';
 import Dashboard from './pages/dashboard';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Alert, AlertColor, Backdrop, CircularProgress, Snackbar } from '@mui/material';
 import AppContext from './api/state';
 
 export default function Router() {
   const [backDropStatus, setBackDropStatus] = React.useState<boolean>(false);
 
+  const [snackBarStatus, setSnackBarStatus] = React.useState<boolean>(false);
+  const [snackBarSeverity, setSnackBarSeverity] = React.useState<AlertColor>('success');
+  const [snackBarMessage, setSnackBarMessage] = React.useState<string>('');
+
+  const handleSnackBarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackBarStatus(false);
+  }
+
   const helpers = {
     setBackDropStatus,
+    openSnackBar: (message: string, severity: AlertColor = 'success') => {
+      setSnackBarSeverity(severity);
+      setSnackBarMessage(message);
+      setSnackBarStatus(true);
+    },
   }
 
   return (
@@ -26,6 +42,12 @@ export default function Router() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+
+      <Snackbar open={snackBarStatus} autoHideDuration={6000} onClose={handleSnackBarClose}>
+        <Alert onClose={handleSnackBarClose} severity={snackBarSeverity} sx={{ width: '100%' }}>
+          {snackBarMessage}
+        </Alert>
+      </Snackbar>
     </AppContext.Provider>
   );
 }

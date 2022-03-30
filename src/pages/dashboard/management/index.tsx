@@ -20,6 +20,7 @@ export default function Management() {
             setData(await getChatGroups());
             ctx.setBackDropStatus(false);
         })();
+    // eslint-disable-next-line
     }, []);
 
     const inProgress = data.filter(item => item.state !== 'completed');

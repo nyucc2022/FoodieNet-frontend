@@ -16,7 +16,7 @@ export default function RatingDialog({ open, users, handleClose }: IRatingDialog
     const onClose = () => handleClose(null);
     const onSubmit = () => handleClose(data);
 
-    return (<Dialog open={open} onClose={onClose}>
+    return (<Dialog open={open} onClose={onClose} fullWidth>
         <DialogTitle>Rate your dine mates</DialogTitle>
         <DialogContent sx={{
             display: 'flex',
@@ -39,8 +39,8 @@ export default function RatingDialog({ open, users, handleClose }: IRatingDialog
             ))}
         </DialogContent>
         <DialogActions>
-            <Button color="secondary" onClick={onClose}>Dismiss</Button>
-            <Button color="primary" onClick={onSubmit}>Rate</Button>
+            <Button variant="outlined" color="warning" onClick={onClose}>Dismiss</Button>
+            <Button variant="contained" color="primary" onClick={onSubmit}>Rate</Button>
         </DialogActions>
     </Dialog>);
 }
