@@ -11,7 +11,6 @@ import AppContext from '../../../api/state';
 export default function Explore() {
     const ctx = React.useContext(AppContext);
 
-    const [value, setValue] = React.useState<number | null>(10);
     const [keyword, setKeyword] = React.useState<string>('');
     const [searchResult, setSearchResult] = React.useState<IGroupInfo[] | null>([]);
 

@@ -16,7 +16,7 @@ import CreateGroup from './create';
 import ChatRoom from './chatroom';
 
 export default function Dashboard() {
-    const [tag, setTag] = useState('management');
+    const [tag, setTag] = useState('explore');
     const navigate = useNavigate();
     const location = useLocation();
 
