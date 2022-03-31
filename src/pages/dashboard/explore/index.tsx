@@ -7,6 +7,8 @@ import { IGroupInfo } from '../../../api/interface';
 import { searchGroup, sleep } from '../../../api/api';
 import { CreditScore, FoodBank, LocationOn } from '@mui/icons-material';
 import AppContext from '../../../api/state';
+import PillSelector from '../../../components/pillSelector';
+import PillRanger from '../../../components/pillRanger';
 
 export default function Explore() {
     const ctx = React.useContext(AppContext);
@@ -53,6 +55,12 @@ export default function Explore() {
                     <SearchIcon />
                 </IconButton>
             </Paper>
+
+            <PillSelector multiple placeholder="Select Cuisine" items={['Native', 'Maxican', 'Japanese', 'Chinese']} onChange={doSearch} />
+            <PillSelector placeholder="Select Distance" items={['< 1km', '< 3km', '< 5km', '< 10km']} onChange={doSearch} />
+
+            <PillRanger placeholder="Group Range" ranging={[2, 20]} onChange={doSearch} />
+            <PillRanger placeholder="Credit Range" ranging={[0, 5]} onChange={doSearch} />
             
             {searchResult?.length || (searchResult === null) ?
                 <Divider sx={{ marginY: 3 }}/> : null}
