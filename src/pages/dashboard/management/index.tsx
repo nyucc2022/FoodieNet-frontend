@@ -15,10 +15,10 @@ export default function Management() {
 
     useEffect(() => {
         (async () => {
-            ctx.setBackDropStatus(true);
+            ctx.setBackDropStatus?.(true);
             await sleep(500);
             setData(await getChatGroups());
-            ctx.setBackDropStatus(false);
+            ctx.setBackDropStatus?.(false);
         })();
     // eslint-disable-next-line
     }, []);

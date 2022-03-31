@@ -46,8 +46,12 @@ export const getChatGroupById = async (groupId: number): Promise<Interface.IGrou
     };
 }
 
+export const searchGroup = async (options?: Interface.ISearchOptions): Promise<Interface.IGroupInfo[]> => {
+    return Promise.all(Array(20).fill(0).map((_, i) => getChatGroupById(i)));
+}
+
 export const searchRestaurant = async (keyword: string): Promise<Interface.IRestaurant[]> => {
-    return Promise.all(Array(10).fill(0).map(i => getChatGroupById(i))).then(x => x.map(c => c.restaurant));
+    return searchGroup({ keyword }).then(x => x.map(c => c.restaurant));
 }
 
 const chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";

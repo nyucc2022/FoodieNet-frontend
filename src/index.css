@@ -1,18 +1,19 @@
 body {
   margin: 0;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 .base-container {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .base-h1 {

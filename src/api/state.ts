@@ -1,5 +1,9 @@
-import React from "react";
+import * as React from "react";
+import { AlertColor } from "@mui/material";
 
-const AppContext = React.createContext<any>({});
+export interface IAppContext {
+    setBackDropStatus?: (status: React.SetStateAction<boolean>) => void;
+    openSnackBar?: (message: string, severity: AlertColor) => void;
+}
 
-export default AppContext;
+export default React.createContext<IAppContext>({});;

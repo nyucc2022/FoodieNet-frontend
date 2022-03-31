@@ -46,13 +46,14 @@ export default function ChatCard({ data, classNames='', style={} }: IChatCard) {
         emphasize: true,
     }];
 
-    return (<ListItem disablePadding className={`chat-card ${classNames}`} style={{
-        border: '1px solid rgba(0, 0, 0, 0.05)',
+    return (<ListItem disablePadding className={`chat-card ${classNames}`} sx={{
+        border: '1px solid',
+        borderColor: theme => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)'  : 'rgba(0, 0, 0, 0.1)',
         borderRadius: '5px',
         margin: '10px 20px',
         width: 'calc(100% - 40px)',
         ...(archived ? {
-            background: 'rgba(0, 0, 0, 0.05)',
+            background: theme => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
         } : null),
         ...style,
     }}>
@@ -68,8 +69,8 @@ export default function ChatCard({ data, classNames='', style={} }: IChatCard) {
                 horizontal: 'left',
             }}>
                 <Box sx={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                    <Box component="h3" sx={{ margin: 0 }}>{data.groupName}</Box>
-                    <Box sx={{ fontSize: '0.8em', color: 'rgba(0, 0, 0, 0.6)' }}>{data.restaurant.name}</Box>
+                    <Box component="h4" sx={{ margin: 0 }}>{data.groupName}</Box>
+                    <Box sx={{ fontSize: '0.8em', opacity: 0.75 }}>{data.restaurant.name}</Box>
                 </Box>
             </Badge>
         </ListItemButton>

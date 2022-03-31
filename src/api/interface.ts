@@ -33,3 +33,12 @@ export interface IChatInfo {
     groupId: number;
     messages: IMessage[];
 }
+
+export interface ISearchOptions {
+    timeRange?: [Date, Date];
+    creditRange?: [number, number];
+    sizeRange?: [number, number];
+    distance?: number;
+    cuisine?: string;
+    keyword?: string;
+}

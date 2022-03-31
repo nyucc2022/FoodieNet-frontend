@@ -34,10 +34,10 @@ export default function CreateGroup() {
         if (data) {
             // TODO: submit restaurant group creation
             console.log('create group:', data);
-            ctx.setBackDropStatus(true);
+            ctx.setBackDropStatus?.(true);
             await sleep(1000);
-            ctx.setBackDropStatus(false);
-            ctx.openSnackBar("Success, Your group is created!", "success");
+            ctx.setBackDropStatus?.(false);
+            ctx.openSnackBar?.("Success, Your group is created!", "success");
             navigate('/dashboard/management');
         }
     }
@@ -90,11 +90,11 @@ export default function CreateGroup() {
                     }}
                     onClick={() => handleRestaurantSelect(r)}
                 >
-                    <Box component="h3" sx={{ margin: 0, textAlign: 'left' }}>{r.name}</Box>
-                    <Box sx={{ marginY: 0.25, textAlign: 'left' }}>{r.address}</Box>
+                    <Box component="h4" sx={{ margin: 0, textAlign: 'left' }}>{r.name}</Box>
+                    <Box sx={{ marginY: 0.25, textAlign: 'left', fontSize: 12 }}>{r.address}</Box>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', marginTop: 0.5, marginLeft: -0.8, marginBottom: -0.8 }}>
-                        <Chip avatar={<FoodBank />} label={r.cuisine} size="small" sx={{ margin: 0.5 }} />
-                        <Chip avatar={<LocationOn />} label={"1.5 mi"} size="small" sx={{ margin: 0.5 }} />
+                        <Chip icon={<FoodBank />} label={r.cuisine} size="small" sx={{ margin: 0.5 }} />
+                        <Chip icon={<LocationOn />} label={"1.5 mi"} size="small" sx={{ margin: 0.5 }} />
                     </Box>
                 </ButtonBase>
             </Paper>))}

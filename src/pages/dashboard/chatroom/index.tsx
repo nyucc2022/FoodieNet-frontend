@@ -26,13 +26,13 @@ export default function ChatRoom() {
     React.useEffect(() => {
         init = 0;
         (async () => {
-            ctx.setBackDropStatus(true);
+            ctx.setBackDropStatus?.(true);
             await sleep(1000);
             const groupData = await getChatGroupById(groupId);
             setData(await getMessages(groupId));
             setGroupData(groupData);
             setRatingOpen(groupData?.state === 'completed' && !groupData?.rated?.includes(0));
-            ctx.setBackDropStatus(false);
+            ctx.setBackDropStatus?.(false);
         })();
     // eslint-disable-next-line
     }, [groupId]);
@@ -72,9 +72,9 @@ export default function ChatRoom() {
             navigate(`/dashboard/management`);
         } else {
             // TODO: submit rate
-            ctx.setBackDropStatus(true);
+            ctx.setBackDropStatus?.(true);
             await sleep(1000);
-            ctx.setBackDropStatus(false);
+            ctx.setBackDropStatus?.(false);
         }
     }
 
@@ -104,7 +104,7 @@ export default function ChatRoom() {
                         (<Box component="span" sx={{
                             marginLeft: 1,
                             marginBottom: 0.3,
-                            color: 'rgba(0, 0, 0, 0.7)',
+                            opacity: 0.75,
                             fontSize: 12,
                             fontWeight: 600
                         }}>{msg.sender.name}</Box>) : null}
@@ -120,7 +120,10 @@ export default function ChatRoom() {
                 </Box>)
             }) || null}
         </Box>
-        <Box sx={{ display: 'flex', padding: 1, paddingLeft: 2, paddingRight: 2, position: 'fixed', left: 0, width: '100%', bottom: 55, background: 'white', zIndex: 2 }}>
+        <Box sx={{
+            display: 'flex', padding: 1, paddingLeft: 2, paddingRight: 2, position: 'fixed', left: 0, width: '100%', bottom: 55, zIndex: 2,
+            background: theme => theme.palette.mode === 'dark' ? '#121212' : 'white',
+        }}>
             <TextField
                 sx={{ flex: 1 }}
                 size="small"
