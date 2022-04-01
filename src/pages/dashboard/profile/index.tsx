@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import { Avatar, Box, Divider, Paper } from '@mui/material';
 
-import Title from '../../../components/title';
-
 export default function Profile() {
     return (<>
         <Box sx={{

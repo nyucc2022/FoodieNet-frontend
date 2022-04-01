@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link as reactLink } from 'react-router-dom';
-import BaseContainer from '../../../components/baseContainer';
+import BaseContainer from '../../components/baseContainer';
 
 export default function SignUp() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -26,11 +26,15 @@ export default function SignUp() {
 
     return (
         <BaseContainer style={{ background: 'black' }}>
-            <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="xs"  sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+            }}>
                 <CssBaseline />
                 <Box
                     sx={{
-                        marginTop: 8,
+                        marginTop: -8,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -104,7 +108,7 @@ export default function SignUp() {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="/dashboard/signin" variant="body2">
+                                <Link href="/signin" variant="body2">
                                     Already have an account? Sign in
                                 </Link>
                             </Grid>

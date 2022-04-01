@@ -9,6 +9,7 @@ import { FoodBank, LocationOn } from '@mui/icons-material';
 import SetupDialog from './setup';
 import AppContext from '../../../api/state';
 import { useNavigate } from 'react-router-dom';
+import { debounce } from 'lodash';
 
 export default function CreateGroup() {
     const navigate = useNavigate();
@@ -18,11 +19,16 @@ export default function CreateGroup() {
     const [searchResult, setSearchResult] = React.useState<IRestaurant[] | null>([]);
     const [setupRestaurant, setSetupRestaurant] = React.useState<IRestaurant | null>(null);
 
+    const searchApiWithDebounce = React.useMemo(() => debounce(async (param?: string) => {
+        await sleep(500);
+        const restaurants = await searchRestaurant(param || keyword);
+        setSearchResult(restaurants);
+        // eslint-disable-next-line
+    }, 200), []);
+
     const doSearch = async (param?: string) => {
         setSearchResult(null);
-        const restaurants = await searchRestaurant(param || keyword);
-        await sleep(500);
-        setSearchResult(restaurants);
+        searchApiWithDebounce(param);
     }
 
     const handleRestaurantSelect = (r: IRestaurant) => {

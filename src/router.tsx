@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import Landing from './pages/landing';
-import Dashboard from './pages/dashboard';
 import { Alert, AlertColor, Backdrop, CircularProgress, Snackbar } from '@mui/material';
 import AppContext from './api/state';
+
+import Landing from './pages/landing';
+import Dashboard from './pages/dashboard';
+import SignIn from './pages/signin';
+import SignUp from './pages/signup';
 
 export default function Router() {
   const [backDropStatus, setBackDropStatus] = React.useState<boolean>(false);
@@ -33,6 +36,8 @@ export default function Router() {
     <AppContext.Provider value={helpers}>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard/*" element={<Dashboard />} />
       </Routes>
 

@@ -21,7 +21,7 @@ export default function PillSelector({ items, placeholder, onChange, multiple=fa
     };
 
     return (
-        <FormControl variant="outlined" size="small" sx={{ marginTop: 1, marginRight: 0.8, ...sx }}>
+        <FormControl variant="outlined" size="small" sx={{ marginTop: 2, marginRight: 0.8, ...sx }}>
             <Select sx={{
                 paddingTop: 0.1,
                 maxHeight: 30,

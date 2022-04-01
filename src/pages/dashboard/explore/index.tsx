@@ -10,19 +10,26 @@ import AppContext from '../../../api/state';
 import PillSelector from '../../../components/pillSelector';
 import PillRanger from '../../../components/pillRanger';
 
+import { debounce } from 'lodash';
+
 export default function Explore() {
     const ctx = React.useContext(AppContext);
 
     const [keyword, setKeyword] = React.useState<string>('');
     const [searchResult, setSearchResult] = React.useState<IGroupInfo[] | null>([]);
 
-    const doSearch = async () => {
-        setSearchResult(null);
+    const searchApiWithDebounce = React.useMemo(() => debounce(async () => {
+        await sleep(500);
         const restaurants = await searchGroup({
             keyword
         });
-        await sleep(500);
         setSearchResult(restaurants);
+        // eslint-disable-next-line
+    }, 200), []);
+
+    const doSearch = async () => {
+        setSearchResult(null);
+        searchApiWithDebounce();
     }
 
     React.useEffect(() => {
@@ -59,11 +66,13 @@ export default function Explore() {
             <PillSelector multiple placeholder="Select Cuisine" items={['Native', 'Maxican', 'Japanese', 'Chinese']} onChange={doSearch} />
             <PillSelector placeholder="Select Distance" items={['< 1km', '< 3km', '< 5km', '< 10km']} onChange={doSearch} />
 
-            <PillRanger placeholder="Group Range" ranging={[2, 20]} onChange={doSearch} />
-            <PillRanger placeholder="Credit Range" ranging={[0, 5]} onChange={doSearch} />
+            <PillRanger tag="Credit" placeholder="Credit Range" ranging={[0, 5]} onChange={doSearch} />
+            <PillRanger tag="People" placeholder="Group Range" ranging={[2, 20]} onChange={doSearch} marks={{
+                values: [2, 5, 10, 15, 20],
+            }}/>
             
             {searchResult?.length || (searchResult === null) ?
-                <Divider sx={{ marginY: 3 }}/> : null}
+                <Divider sx={{ marginY: 2 }}/> : null}
             
             {searchResult === null ?
                 <Box sx={{

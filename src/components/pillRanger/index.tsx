@@ -6,11 +6,13 @@ import { ArrowDropDown } from '@mui/icons-material';
 export interface IPillRanger {
     placeholder: string;
     ranging: [number, number];
+    tag: string;
+    marks?: {values: number[], formatter?: (n: number) => string};
     onChange?: (value: [number, number]) => void;
     sx?: SxProps<Theme> | undefined;
 }
 
-export default function PillRanger({ placeholder, ranging, onChange, sx={} }: IPillRanger) {
+export default function PillRanger({ tag, placeholder, ranging, marks, onChange, sx={} }: IPillRanger) {
     const [range, changeRange] = React.useState<[number, number]>(ranging);
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef<HTMLButtonElement>(null);
@@ -28,14 +30,14 @@ export default function PillRanger({ placeholder, ranging, onChange, sx={} }: IP
             <Button sx={{
                 marginTop: 1,
                 marginRight: 0.8,
-                paddingTop: 0.4,
                 paddingBottom: 0.2,
                 fontSize: 12,
                 borderRadius: 6,
+                textTransform: 'inherit',
                 ...sx,
             }} variant="outlined" ref={anchorRef} size="small" onClick={() => setOpen(!open)}>
-                {range.join('-') === ranging.join('-') ? <em>{placeholder}</em> : range.join(' - ')}
-                <ArrowDropDown sx={{ marginTop: -0.25 }} />
+                {range.join('-') === ranging.join('-') ? <em>{placeholder}</em> : `${tag}: ${range.join(' - ')}`}
+                <ArrowDropDown />
             </Button>
 
             <Popover
@@ -53,7 +55,10 @@ export default function PillRanger({ placeholder, ranging, onChange, sx={} }: IP
                         onChange={handleValueChange}
                         getAriaValueText={num => `${num} People`}
                         step={1}
-                        marks={true}
+                        marks={marks ? marks.values.map(v => ({
+                            value: v,
+                            label: (marks.formatter || (v => `${v}`))(v),
+                        })) : true}
                         min={ranging[0]}
                         max={ranging[1]}
                         valueLabelDisplay="off"
