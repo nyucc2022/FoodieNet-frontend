@@ -28,7 +28,7 @@ export default function PillRanger({ tag, placeholder, ranging, marks, onChange,
     return (
         <>
             <Button sx={{
-                marginTop: 1,
+                marginTop: 2,
                 marginRight: 0.8,
                 paddingBottom: 0.2,
                 fontSize: 12,
