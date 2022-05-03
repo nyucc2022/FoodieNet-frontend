@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { Alert, AlertColor, Backdrop, CircularProgress, Snackbar } from '@mui/material';
 import AppContext from './api/state';
@@ -8,8 +8,11 @@ import Landing from './pages/landing';
 import Dashboard from './pages/dashboard';
 import SignIn from './pages/signin';
 import SignUp from './pages/signup';
+import { activateUser, currentUser } from './api/cognito';
 
 export default function Router() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [backDropStatus, setBackDropStatus] = React.useState<boolean>(false);
 
   const [snackBarStatus, setSnackBarStatus] = React.useState<boolean>(false);
@@ -23,6 +26,14 @@ export default function Router() {
     setSnackBarStatus(false);
   }
 
+  React.useEffect(() => {
+    activateUser().then(user => {
+      if (!user && location.pathname.startsWith('/dashboard')) {
+        navigate('/');
+      }
+    });
+  }, []);
+
   const helpers = {
     setBackDropStatus,
     openSnackBar: (message: string, severity: AlertColor = 'success') => {
@@ -30,7 +41,17 @@ export default function Router() {
       setSnackBarMessage(message);
       setSnackBarStatus(true);
     },
+    logout: () => {
+      currentUser()?.signOut();
+      navigate('/');
+    },
+    navigate: (path: string) => {
+      navigate(path);
+    }
   }
+  
+  // @ts-ignore
+  window.helpers = helpers;
 
   return (
     <AppContext.Provider value={helpers}>

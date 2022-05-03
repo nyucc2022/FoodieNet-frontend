@@ -17,8 +17,31 @@ export const getMe = (): Interface.IUser => {
     };
 }
 
+export const call = (fn: string, ...args: string[]) => {
+    // @ts-ignore
+    return window.helpers?.[fn]?.(...args);
+}
+
 export const isMe = (user?: Interface.IUser): boolean => {
     return getMe().id === user?.id;
+}
+
+export const request = async <T=any>(endpoint: string, payload: any): Promise<T | null> => {
+    try {
+        const req = await fetch(`/${endpoint}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await req.json();
+        return data;
+    } catch(err) {
+        console.error(err);
+        call('openSnackBar', 'Cannot fetch api, please check your network', 'error');
+        return null;
+    }
 }
 
 // TODO: mock data

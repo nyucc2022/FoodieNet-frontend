@@ -11,17 +11,30 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { Link as reactLink } from 'react-router-dom';
 import BaseContainer from '../../components/baseContainer';
+import { signUp } from '../../api/cognito';
+import AppContext from '../../api/state';
 
 export default function SignUp() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const ctx = React.useContext(AppContext);
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        const email = data.get('email')?.toString() || '';
+        const password = data.get('password')?.toString() || '';
+        const username = data.get('username')?.toString() || '';
+
+        ctx.setBackDropStatus?.(true);
+        try {
+            const result = await signUp(username, password, {
+                email,
+            });
+            ctx.openSnackBar?.(`Success, please use your username and password to login!`, "success");
+            ctx.navigate?.('/signin');
+        } catch(err) {
+            ctx.openSnackBar?.(`Error: ${err}`, "error");
+        }
+        ctx.setBackDropStatus?.(false);
     };
 
     return (
@@ -48,25 +61,14 @@ export default function SignUp() {
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    autoComplete="given-name"
-                                    name="firstName"
-                                    required
-                                    fullWidth
-                                    id="firstName"
-                                    label="First Name"
-                                    autoFocus
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     required
                                     fullWidth
-                                    id="lastName"
-                                    label="Last Name"
-                                    name="lastName"
-                                    autoComplete="family-name"
+                                    id="username"
+                                    label="Username"
+                                    name="username"
+                                    autoComplete="username"
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -102,7 +104,6 @@ export default function SignUp() {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            component={reactLink} to="/dashboard/explore"
                         >
                             Sign Up
                         </Button>

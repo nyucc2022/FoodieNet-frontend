@@ -12,6 +12,8 @@ import PillRanger from '../../../components/pillRanger';
 
 import { debounce } from 'lodash';
 
+let savedParams: any = {};
+
 export default function Explore() {
     const ctx = React.useContext(AppContext);
 
@@ -20,22 +22,26 @@ export default function Explore() {
 
     const searchApiWithDebounce = React.useMemo(() => debounce(async () => {
         await sleep(500);
-        const restaurants = await searchGroup({
-            keyword
-        });
+        console.log('Params:', savedParams);
+        const restaurants = await searchGroup(savedParams);
         setSearchResult(restaurants);
         // eslint-disable-next-line
     }, 200), []);
 
-    const doSearch = async () => {
+    const doSearch = async (param: string, params?: any) => {
         setSearchResult(null);
+        if (params) {
+            savedParams[param] = params;
+        } else {
+            savedParams['keyword'] = param;
+        }
         searchApiWithDebounce();
     }
 
     React.useEffect(() => {
-        doSearch();
+        doSearch('');
     // eslint-disable-next-line
-    }, [keyword]);
+    }, []);
 
     const handleGroupSelect = async (r: IGroupInfo) => {
         ctx.setBackDropStatus?.(true);
@@ -56,6 +62,7 @@ export default function Explore() {
                     value={keyword}
                     onChange={(event) => {
                         setKeyword(event.target.value);
+                        doSearch(event.target.value);
                     }}
                 />
                 <IconButton sx={{ p: '10px' }} aria-label="search">
@@ -63,11 +70,11 @@ export default function Explore() {
                 </IconButton>
             </Paper>
 
-            <PillSelector multiple placeholder="Select Cuisine" items={['Native', 'Maxican', 'Japanese', 'Chinese']} onChange={doSearch} />
-            <PillSelector placeholder="Select Distance" items={['< 1km', '< 3km', '< 5km', '< 10km']} onChange={doSearch} />
+            <PillSelector multiple placeholder="Select Cuisine" items={['Native', 'Maxican', 'Japanese', 'Chinese']} onChange={v => doSearch('cuisine', v)} />
+            <PillSelector placeholder="Select Distance" items={['< 1km', '< 3km', '< 5km', '< 10km']} onChange={v => doSearch('distance', v)} />
 
-            <PillRanger tag="Credit" placeholder="Credit Range" ranging={[0, 5]} onChange={doSearch} />
-            <PillRanger tag="People" placeholder="Group Range" ranging={[2, 20]} onChange={doSearch} marks={{
+            <PillRanger tag="Credit" placeholder="Credit Range" ranging={[0, 5]} onChange={v => doSearch('credit', v)} />
+            <PillRanger tag="People" placeholder="Group Range" ranging={[2, 20]} onChange={v => doSearch('group', v)} marks={{
                 values: [2, 5, 10, 15, 20],
             }}/>
             

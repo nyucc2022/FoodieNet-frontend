@@ -11,17 +11,27 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { Link as reactLink } from 'react-router-dom';
 import BaseContainer from '../../components/baseContainer';
+import { signIn } from '../../api/cognito';
+import AppContext from '../../api/state';
 
 export default function SignIn() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const ctx = React.useContext(AppContext);
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        const email = data.get('email')?.toString() || '';
+        const password = data.get('password')?.toString() || '';
+
+        ctx.setBackDropStatus?.(true);
+        try {
+            const result = await signIn(email, password);
+            ctx.openSnackBar?.(`Success, welcome back ${result.getUsername()}!`, "success");
+            ctx.navigate?.('/dashboard/explore');
+        } catch(err) {
+            ctx.openSnackBar?.(`Error: ${err}`, "error");
+        }
+        ctx.setBackDropStatus?.(false);
     };
 
     return (
@@ -76,7 +86,6 @@ export default function SignIn() {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            component={reactLink} to="/dashboard/explore"
                         >
                             Sign In
                         </Button>

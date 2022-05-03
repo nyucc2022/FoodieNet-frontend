@@ -10,6 +10,9 @@ import SetupDialog from './setup';
 import AppContext from '../../../api/state';
 import { useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
+import PillSelector from '../../../components/pillSelector';
+
+let savedParams: any = {};
 
 export default function CreateGroup() {
     const navigate = useNavigate();
@@ -19,16 +22,21 @@ export default function CreateGroup() {
     const [searchResult, setSearchResult] = React.useState<IRestaurant[] | null>([]);
     const [setupRestaurant, setSetupRestaurant] = React.useState<IRestaurant | null>(null);
 
-    const searchApiWithDebounce = React.useMemo(() => debounce(async (param?: string) => {
+    const searchApiWithDebounce = React.useMemo(() => debounce(async (param?: string, params: any = null) => {
         await sleep(500);
+        console.log('Params:', param || keyword, params || savedParams);
         const restaurants = await searchRestaurant(param || keyword);
         setSearchResult(restaurants);
         // eslint-disable-next-line
     }, 200), []);
 
-    const doSearch = async (param?: string) => {
+    const doSearch = async (param: string, params?: any) => {
         setSearchResult(null);
-        searchApiWithDebounce(param);
+        if (params) {
+            savedParams[param] = params;
+            param = '';
+        }
+        searchApiWithDebounce(param, savedParams);
     }
 
     const handleRestaurantSelect = (r: IRestaurant) => {
@@ -68,6 +76,9 @@ export default function CreateGroup() {
                     <SearchIcon />
                 </IconButton>
             </Paper>
+
+            <PillSelector multiple placeholder="Select Cuisine" items={['Native', 'Maxican', 'Japanese', 'Chinese']} onChange={v => doSearch('cuisine', v)} />
+            <PillSelector placeholder="Select Distance" items={['< 1km', '< 3km', '< 5km', '< 10km']} onChange={v => doSearch('distance', v)} />
             
             {searchResult?.length || (searchResult === null) ?
                 <Divider sx={{ marginY: 3 }}/> : null}
