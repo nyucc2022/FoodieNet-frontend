@@ -8,7 +8,7 @@ import Landing from './pages/landing';
 import Dashboard from './pages/dashboard';
 import SignIn from './pages/signin';
 import SignUp from './pages/signup';
-import { activateUser, currentUser } from './api/cognito';
+import { currentUser, getUser, signOut } from './api/cognito';
 import { call } from './api/api';
 
 export default function Router() {
@@ -28,7 +28,7 @@ export default function Router() {
   }
 
   React.useEffect(() => {
-    activateUser().then(user => {
+    getUser().then(user => {
       if (!user && location.pathname.startsWith('/dashboard')) {
         navigate('/');
       }
@@ -43,7 +43,7 @@ export default function Router() {
       setSnackBarStatus(true);
     },
     logout: (showMessage = false) => {
-      currentUser()?.signOut();
+      signOut();
       navigate('/');
       if (showMessage) {
         call("openSnackBar", "Success, you are logged out!");

@@ -1,5 +1,6 @@
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import { reject } from 'lodash';
+import { Counter, waitUntil } from './api';
 
 const poolData = {
 	UserPoolId: 'us-east-1_mTFY5PaNg',
@@ -30,18 +31,39 @@ export const activateUser = (): Promise<AmazonCognitoIdentity.CognitoUser | null
                     resolve(user);
                 }
             })
+        } else {
+            poll.user = null;
+            resolve(null);
         }
-        poll.user = null;
-        resolve(null);
+    }).then((v: any) => {
+        return v;
     });
 }
 
-export const getUser = async () => {
+let activeProcess = Counter();
+export const getUser = async (waits = false) => {
+    const shouldWait = waits && !poll.user;
     if (poll.user) {
+        console.log(">> getUser Cached");
+        activeProcess.dec();
+        return poll.user;
+    } else if (activeProcess.add(shouldWait ? 0.01 : 1) > 1.99) {
+        console.log(">> getUser Await");
+        await waitUntil(() => poll.user);
+        activeProcess.dec();
         return poll.user;
     }
+    
+    console.log(">> getUser Fetch");
+    const user = await activateUser();
+    activeProcess.reset();
+    console.log("<< getUser:", user);
+    return user;
+}
 
-    return await activateUser();
+export const signOut = () => {
+    currentUser()?.signOut();
+    poll.user = null;
 }
 
 export const currentUsername = () => currentUser()?.getUsername() || '';
@@ -49,7 +71,7 @@ export const currentUsername = () => currentUser()?.getUsername() || '';
 export const getUserAttributes = async (): Promise<any> => {
     const result = {} as {[key: string]: string};
     return new Promise(async (resolve, reject) => {
-        const user = await getUser();
+        const user = await getUser(true);
         if (!user) {
             reject(new Error('Error: Cannot get logined user'));
             return;
@@ -84,6 +106,7 @@ export const withAttrs = (obj: {[key: string]: any}) => {
 };
 
 export const signIn = async (username: string, password: string): Promise<AmazonCognitoIdentity.CognitoUser> => {
+    console.log(">> Call Sign in")
     return new Promise((resolve, onFailure) => {
         const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
             Username: username,
