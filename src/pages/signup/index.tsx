@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import BaseContainer from '../../components/baseContainer';
-import { signUp } from '../../api/cognito';
+import { signUp } from '../../api/amplify';
 import AppContext from '../../api/state';
 
 export default function SignUp() {
@@ -25,14 +25,22 @@ export default function SignUp() {
         const username = data.get('username')?.toString() || '';
 
         ctx.setBackDropStatus?.(true);
+        const success = () => {
+            ctx.openSnackBar?.(`Success, please use your username and password to login!`, "success");
+            ctx.navigate?.('/signin');
+        }
         try {
             await signUp(username, password, {
                 email,
             });
-            ctx.openSnackBar?.(`Success, please use your username and password to login!`, "success");
-            ctx.navigate?.('/signin');
+            success();
         } catch(err) {
-            ctx.openSnackBar?.(`Error: ${err}`, "error");
+            // TODO: backend fallback
+            if (`${err}`.includes('Unrecognizable lambda output')) {
+                success();
+            } else {
+                ctx.openSnackBar?.(`Error: ${err}`, "error");
+            }
         }
         ctx.setBackDropStatus?.(false);
     };

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Avatar, Box, Button, Divider, Paper } from '@mui/material';
 import AppContext from '../../../api/state';
-import { currentUsername, getUserAttributes } from '../../../api/cognito';
+import { getUserInfo } from '../../../api/amplify';
 import { call } from '../../../api/utils';
 
 export default function Profile() {
@@ -13,16 +13,19 @@ export default function Profile() {
     const [rating, setRating] = React.useState(5);
 
     React.useEffect(() => {
-        getUserAttributes().then(data => {
+        getUserInfo().then(data => {
+            if (!data) {
+                throw new Error('User not logged in.');
+            }
             setName(data.username);
-            setEmail(data.email);
+            setEmail(data.attributes.email);
             setRating(4.4);
         }).catch(err => {
             ctx.openSnackBar?.(`${err}`, 'error');
             ctx.logout?.();
         })
         // eslint-disable-next-line
-    }, [currentUsername()]);
+    }, []);
 
     return (<>
         <Box sx={{

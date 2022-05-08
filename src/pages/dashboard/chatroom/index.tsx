@@ -2,7 +2,7 @@ import { Send } from '@mui/icons-material';
 import { Box, Button, TextField } from '@mui/material';
 import * as React from 'react';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
-import { getChatGroupById, getMessages, isMe as isMeApi } from '../../../api/api';
+import { getChatGroupById, getMessages, isMe as isMeApi, sendMessage } from '../../../api/api';
 import { IChatInfo, IGroupInfo } from '../../../api/interface';
 import AppContext from '../../../api/state';
 import { sleep } from '../../../api/utils';
@@ -52,8 +52,9 @@ export default function ChatRoom() {
         titleRef?.current?.parentElement && (titleRef.current.parentElement.scrollTop = 1000000);
     }
 
-    const handleSendClick = () => {
+    const handleSendClick = async () => {
         if (input) {
+            console.log(await sendMessage(groupId, input));
             data?.messages.push({
                 messageId: Date.now(),
                 sender: {

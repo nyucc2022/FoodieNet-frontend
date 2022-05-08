@@ -8,7 +8,7 @@ import Landing from './pages/landing';
 import Dashboard from './pages/dashboard';
 import SignIn from './pages/signin';
 import SignUp from './pages/signup';
-import { getUser, signOut } from './api/cognito';
+import { getUser, signOut } from './api/amplify';
 import { assign, call } from './api/utils';
 
 export default function Router() {
@@ -28,7 +28,7 @@ export default function Router() {
   }
 
   React.useEffect(() => {
-    getUser().then(({ user }) => {
+    getUser().then(user => {
       if (!user && location.pathname.startsWith('/dashboard')) {
         navigate('/');
       }
@@ -43,11 +43,15 @@ export default function Router() {
       setSnackBarMessage(message);
       setSnackBarStatus(true);
     },
-    logout: (showMessage = false) => {
-      signOut();
-      navigate('/');
-      if (showMessage) {
-        call("openSnackBar", "Success, you are logged out!");
+    logout: async (showMessage = false) => {
+      try {
+        await signOut();
+        navigate('/');
+        if (showMessage) {
+          call("openSnackBar", "Success, you are logged out!");
+        }
+      } catch(err) {
+        console.error(`Sign out error: ${err}`)
       }
     },
     navigate: (path: string) => {

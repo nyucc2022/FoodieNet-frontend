@@ -1,11 +1,9 @@
-import { currentUser, getUser } from './cognito';
+import { currentUser, post } from './amplify';
 import * as Interface from './interface';
 import { call, choose } from './utils';
 
-const BASEURL = 'https://httpbin.org';
-
 export const getMe = (): Interface.IUser => {
-    const username = currentUser()?.getUsername() || '';
+    const username = currentUser()?.username || '';
     return {
         id: username,
         name: username,
@@ -17,23 +15,8 @@ export const isMe = (user?: Interface.IUser): boolean => {
 }
 
 export const request = async <T=any>(endpoint: string, payload: any): Promise<T | null> => {
-    const { session } = await getUser(true);
-    if (!session) return null;
-
-    const token = `Bearer ${session.getIdToken().getJwtToken()}`;
     try {
-        const req = await fetch(`${BASEURL}${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Amz-Token': token,
-                'Authorization': token,
-            },
-            body: JSON.stringify(payload),
-        });
-
-        const data = await req.json();
-        return data;
+        return await post(endpoint, payload);
     } catch(err) {
         console.error(err);
         call('openSnackBar', 'Cannot fetch api, please check your network', 'error');
@@ -67,7 +50,6 @@ export const getChatGroupById = async (groupId: number): Promise<Interface.IGrou
 }
 
 export const searchGroup = async (options?: Interface.ISearchOptions): Promise<Interface.IGroupInfo[]> => {
-    await request('/anything', {});
     return Promise.all(Array(20).fill(0).map((_, i) => getChatGroupById(i)));
 }
 
@@ -103,6 +85,12 @@ export const getMessages = async (groupId: number): Promise<Interface.IChatInfo>
             messageId: 1+i,
         })),
     }
+}
+
+export const sendMessage = async (groupId: number, message: string): Promise<any> => {
+    return await request("/sendmessages", {
+        groupId, message,
+    });
 }
 
 // TODO: mock data

@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import BaseContainer from '../../components/baseContainer';
-import { signIn } from '../../api/cognito';
+import { signIn } from '../../api/amplify';
 import AppContext from '../../api/state';
 
 export default function SignIn() {
@@ -25,8 +25,8 @@ export default function SignIn() {
 
         ctx.setBackDropStatus?.(true);
         try {
-            const result = await signIn(email, password);
-            ctx.openSnackBar?.(`Success, welcome back ${result.getUsername()}!`, "success");
+            const user = await signIn(email, password);
+            ctx.openSnackBar?.(`Success, welcome back ${user.getUsername()}!`, "success");
             ctx.navigate?.('/dashboard/explore');
         } catch(err) {
             ctx.openSnackBar?.(`Error: ${err}`, "error");
