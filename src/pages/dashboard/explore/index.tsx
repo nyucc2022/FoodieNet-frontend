@@ -34,7 +34,7 @@ export default function Explore() {
         if (params) {
             savedParams[param] = params;
         } else {
-            savedParams['keyword'] = param;
+            savedParams['name'] = param;
         }
         searchApiWithDebounce();
     }

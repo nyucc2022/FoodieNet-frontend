@@ -5,7 +5,7 @@ import { List, ListSubheader } from '@mui/material';
 import Title from '../../../components/title';
 import ChatCard from '../../../components/chatCard';
 
-import { searchGroups } from '../../../api/api';
+import { getMyGroups } from '../../../api/api';
 import { IGroupInfo } from '../../../api/interface';
 import AppContext from '../../../api/state';
 import { sleep } from '../../../api/utils';
@@ -18,7 +18,7 @@ export default function Management() {
         (async () => {
             ctx.setBackDropStatus?.(true);
             await sleep(500);
-            setData((await searchGroups({})) || []);
+            setData((await getMyGroups()) || []);
             ctx.setBackDropStatus?.(false);
         })();
     // eslint-disable-next-line

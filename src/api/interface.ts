@@ -27,7 +27,7 @@ export interface IGroupInfo {
     totalSize: number;
     currentSize: number;
 
-    participants: IUser[];
+    groupUsernameList: string[];
     reviewedUserList: string[];
     currentGroupCredit: number;
     status: number;
@@ -48,14 +48,10 @@ export interface IUserProfile extends IUser {
 }
 
 export interface IMessage {
-    sender: IUser;
-    text: string;
-    messageId: number;
-}
-
-export interface IChatInfo {
-    groupId: string;
-    messages: IMessage[];
+    groupid: string;
+    message: string;
+    messageid: number;
+    username: string;
 }
 
 export interface ISearchOptions {

@@ -1,16 +1,15 @@
 import * as React from 'react';
 
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Rating } from '@mui/material';
-import { IUser } from '../../../../api/interface';
 import { isMe } from '../../../../api/api';
 
 export interface IRatingDialog {
     open: boolean;
-    users: IUser[];
+    usernames: string[];
     handleClose: (data: { [name: number]: number } | null) => void;
 }
 
-export default function RatingDialog({ open, users, handleClose }: IRatingDialog) {
+export default function RatingDialog({ open, usernames, handleClose }: IRatingDialog) {
     const data: { [id: string]: number } = {};
 
     const onClose = () => handleClose(null);
@@ -22,17 +21,17 @@ export default function RatingDialog({ open, users, handleClose }: IRatingDialog
             display: 'flex',
             flexDirection: 'column',
         }}>
-            {users.filter(user => !isMe(user)).map(user => (
-                <Box key={user.username} sx={{
+            {usernames.filter(usernames => !isMe(usernames)).map(user => (
+                <Box key={user} sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     marginY: 1,
                 }}>
-                    <Box component="span">{`${user.username}`}</Box>
+                    <Box component="span">{`${user}`}</Box>
                     <Rating
-                        name={`${user.username}`}
+                        name={`${user}`}
                         onChange={(_: React.SyntheticEvent, newValue: number | null) => {
-                            data[user.username] = newValue || 0;
+                            data[user] = newValue || 0;
                         }}
                     />
                 </Box>

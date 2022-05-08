@@ -43,7 +43,7 @@ export default function Dashboard() {
         }}>
             <div style={{
                 flex: '1',
-                overflow: 'scroll',
+                overflow: 'auto',
 
             }}>
                 <Routes>

@@ -3,13 +3,16 @@ import { Box, Button, TextField } from '@mui/material';
 import * as React from 'react';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
 import { getChatGroupById, getMessages, isMe as isMeApi, rateUser, sendMessage } from '../../../api/api';
-import { IChatInfo, IGroupInfo } from '../../../api/interface';
+import { IMessage, IGroupInfo } from '../../../api/interface';
 import AppContext from '../../../api/state';
+import { call } from '../../../api/utils';
 
 import Title from '../../../components/title';
 import RatingDialog from './rating';
 
 let init = 0;
+let lastSrollMessageId = '';
+
 export default function ChatRoom() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -19,32 +22,53 @@ export default function ChatRoom() {
 
     const ctx = React.useContext(AppContext);
     const [input, setInput] = React.useState<string>('');
-    const [data, setData] = React.useState<IChatInfo | null>(null);
+    const [data, setData] = React.useState<IMessage[] | null>(null);
     const [groupData, setGroupData] = React.useState<IGroupInfo | null>(null);
     const [ratingOpen, setRatingOpen] = React.useState<boolean>(false);
 
-    const fetchMessage = React.useMemo(() => (async (block = false) => {
+    const getLastScroll = () => {
+        const lastMessage = data?.[(data?.length || 0) - 1] || {} as IMessage;
+        return `${groupId}/${lastMessage.messageid}`;
+    }
+
+    const fetchMessage = React.useMemo(() => (async (block = false, messageOnly = false) => {
         block && ctx.setBackDropStatus?.(true);
-        const groupData = await getChatGroupById(groupId);
-        setData(await getMessages(groupId));
-        setGroupData(groupData);
-        setRatingOpen(groupData?.state === 'completed');
+        const messages = await getMessages(groupId);
+        setData(messages);
+        if (!messageOnly) {
+            const groupData = await getChatGroupById(groupId);
+            setGroupData(groupData);
+            setRatingOpen(groupData?.state === 'completed');
+        }
         block && ctx.setBackDropStatus?.(false);
         // eslint-disable-next-line
     }), [groupId]);
 
     React.useEffect(() => {
         init = 0;
-        fetchMessage(true);
+        lastSrollMessageId = '';
+        fetchMessage(true, false);
+
+        const itv = setInterval(() => {
+            fetchMessage(false, true);
+        }, 1000);
+
+        return () => {
+            clearInterval(itv);
+        }
         // eslint-disable-next-line
     }, [groupId]);
 
-    React.useEffect(() => {
+    React.useEffect((...args) => {
         init += 1;
-        if (init <= 2) {
+        if (init < 2) {
             return;
         }
-        toBottom();
+        const scrollId = getLastScroll();
+        if (lastSrollMessageId !== scrollId) {
+            lastSrollMessageId = scrollId;
+            toBottom();
+        }
     // eslint-disable-next-line
     }, [data]);
     
@@ -55,9 +79,12 @@ export default function ChatRoom() {
 
     const handleSendClick = async () => {
         if (input) {
-            console.log(await sendMessage(groupId, input));
-            await fetchMessage(false);
-            setInput('');
+            if (await sendMessage(groupId, input)) {
+                await fetchMessage(false, true);
+                setInput('');
+            } else {
+                call("openSnackBar", "Can not send message at this moment, please try again later.", "error")
+            }
         }
     }
 
@@ -78,13 +105,13 @@ export default function ChatRoom() {
     return (<>
         <Title innerRef={titleRef}>{`ChatRoom: ${groupId}`}</Title>
         <Box sx={{ padding: 2, marginTop: -2, paddingBottom: '60px', display: 'flex', flexDirection: 'column' }}>
-            {(data?.messages || []).map(msg => {
-                const isMe = isMeApi(msg.sender);
-                const sameUser = lastUserId === msg.sender.username;
-                lastUserId = msg.sender.username;
+            {(data || []).map((msg: IMessage) => {
+                const isMe = isMeApi(msg.username);
+                const sameUser = lastUserId === msg.username;
+                lastUserId = msg.username;
 
                 return (<Box
-                    key={msg.messageId}
+                    key={msg.messageid}
                     sx={{
                         marginTop: sameUser ? 0.25 : 2,
                         display: 'inline-flex',
@@ -102,7 +129,7 @@ export default function ChatRoom() {
                             opacity: 0.75,
                             fontSize: 12,
                             fontWeight: 600
-                        }}>{msg.sender.username}</Box>) : null}
+                        }}>{msg.username}</Box>) : null}
                     <Box sx={{
                         background: isMe ? 'rgb(46, 125, 50)' : '#556cd6',
                         borderRadius: '16px',
@@ -110,7 +137,7 @@ export default function ChatRoom() {
                         padding: '8px 12px',
                         fontSize: '14px',
                     }}>
-                        {msg.text}
+                        {msg.message}
                     </Box>
                 </Box>)
             }) || null}
@@ -133,7 +160,7 @@ export default function ChatRoom() {
         </Box>
         <RatingDialog
             open={ratingOpen}
-            users={groupData?.participants || []}
+            usernames={groupData?.groupUsernameList || []}
             handleClose={handleRateClose}
         />
     </>);
