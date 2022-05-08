@@ -4,7 +4,7 @@ import * as React from 'react';
 import Title from '../../../components/title';
 import SearchIcon from '@mui/icons-material/Search'
 import { IGroupInfo } from '../../../api/interface';
-import { searchGroup } from '../../../api/api';
+import { searchGroups } from '../../../api/api';
 import { CreditScore, FoodBank, LocationOn } from '@mui/icons-material';
 import AppContext from '../../../api/state';
 import PillSelector from '../../../components/pillSelector';
@@ -24,8 +24,8 @@ export default function Explore() {
     const searchApiWithDebounce = React.useMemo(() => debounce(async () => {
         await sleep(500);
         console.log('Params:', savedParams);
-        const restaurants = await searchGroup(savedParams);
-        setSearchResult(restaurants);
+        const restaurants = await searchGroups(savedParams);
+        setSearchResult(restaurants || []);
         // eslint-disable-next-line
     }, 200), []);
 
@@ -76,8 +76,8 @@ export default function Explore() {
             <PillSelector placeholder="Select Distance" items={['< 1km', '< 3km', '< 5km', '< 10km']} onChange={v => doSearch('distance', v)} />
 
             <PillRanger tag="Credit" placeholder="Credit Range" ranging={[0, 5]} onChange={v => doSearch('credit', v)} />
-            <PillRanger tag="People" placeholder="Group Range" ranging={[2, 20]} onChange={v => doSearch('group', v)} marks={{
-                values: [2, 5, 10, 15, 20],
+            <PillRanger tag="People" placeholder="Group Range" ranging={[2, 10]} onChange={v => doSearch('group', v)} marks={{
+                values: [2, 3, 5, 10],
             }}/>
             
             {searchResult?.length || (searchResult === null) ?

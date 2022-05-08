@@ -23,16 +23,16 @@ export default function RatingDialog({ open, users, handleClose }: IRatingDialog
             flexDirection: 'column',
         }}>
             {users.filter(user => !isMe(user)).map(user => (
-                <Box key={user.id} sx={{
+                <Box key={user.username} sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     marginY: 1,
                 }}>
-                    <Box component="span">{`${user.name}`}</Box>
+                    <Box component="span">{`${user.username}`}</Box>
                     <Rating
-                        name={`${user.id}`}
+                        name={`${user.username}`}
                         onChange={(_: React.SyntheticEvent, newValue: number | null) => {
-                            data[user.id] = newValue || 0;
+                            data[user.username] = newValue || 0;
                         }}
                     />
                 </Box>

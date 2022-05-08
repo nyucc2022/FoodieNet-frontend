@@ -3,17 +3,19 @@ import * as React from 'react';
 
 import Title from '../../../components/title';
 import SearchIcon from '@mui/icons-material/Search'
-import { IRestaurant } from '../../../api/interface';
-import { searchRestaurant } from '../../../api/api';
+import { ICreateGroup, IRestaurant } from '../../../api/interface';
+import { createGroup, searchRestaurants } from '../../../api/api';
 import { FoodBank, LocationOn } from '@mui/icons-material';
 import SetupDialog from './setup';
 import AppContext from '../../../api/state';
 import { useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import PillSelector from '../../../components/pillSelector';
-import { sleep } from '../../../api/utils';
 
-let savedParams: any = {};
+let savedParams: any = {
+    cuisine: [],
+    name: '',
+};
 
 export default function CreateGroup() {
     const navigate = useNavigate();
@@ -23,39 +25,47 @@ export default function CreateGroup() {
     const [searchResult, setSearchResult] = React.useState<IRestaurant[] | null>([]);
     const [setupRestaurant, setSetupRestaurant] = React.useState<IRestaurant | null>(null);
 
-    const searchApiWithDebounce = React.useMemo(() => debounce(async (param?: string, params: any = null) => {
-        await sleep(500);
-        console.log('Params:', param || keyword, params || savedParams);
-        const restaurants = await searchRestaurant(param || keyword);
-        setSearchResult(restaurants);
+    const searchApiWithDebounce = React.useMemo(() => debounce(async (params: any = null) => {
+        console.log('Params:', params);
+        const restaurants = await searchRestaurants(params);
+        setSearchResult((restaurants || []).slice(0, 50));
         // eslint-disable-next-line
     }, 200), []);
 
-    React.useEffect(() => { savedParams = {} }, []);
+    React.useEffect(() => { savedParams = {
+        cuisine: [],
+        name: '',
+    } }, []);
 
     const doSearch = async (param: string, params?: any) => {
         setSearchResult(null);
         if (params) {
             savedParams[param] = params;
             param = '';
+        } else {
+            savedParams['name'] = param;
         }
-        searchApiWithDebounce(param, savedParams);
+        searchApiWithDebounce(savedParams);
     }
 
     const handleRestaurantSelect = (r: IRestaurant) => {
         setSetupRestaurant(r);
     }
 
-    const handleSetupClose = async (data: { [name: string]: any } | null) => {
-        setSetupRestaurant(null);
+    const handleSetupClose = async (data: ICreateGroup | null) => {
         if (data) {
-            // TODO: submit restaurant group creation
-            console.log('create group:', data);
+            console.log('Params:', data);
             ctx.setBackDropStatus?.(true);
-            await sleep(1000);
+            if ((await createGroup(data)).groupId) {
+                setSetupRestaurant(null);
+                ctx.openSnackBar?.("Success, Your group is created!", "success");
+                navigate('/dashboard/management');
+            } else {
+                ctx.openSnackBar?.("Error: we have issue creating your group.", "error");
+            }
             ctx.setBackDropStatus?.(false);
-            ctx.openSnackBar?.("Success, Your group is created!", "success");
-            navigate('/dashboard/management');
+        } else {
+            setSetupRestaurant(null);
         }
     }
 
@@ -97,7 +107,7 @@ export default function CreateGroup() {
                 </Box>: null}
             
             {searchResult?.map(r => (<Paper
-                key={r.id}
+                key={r.id || (r.name + r.address)}
                 sx={{ display: 'flex', flexDirection: 'column', marginBottom: 2, }}
                 elevation={1}
             >
@@ -114,8 +124,9 @@ export default function CreateGroup() {
                     <Box sx={{ marginY: 0.25, textAlign: 'left', fontSize: 12 }}>{r.address}</Box>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', marginTop: 0.5, marginLeft: -0.8, marginBottom: -0.8 }}>
                         <Chip icon={<FoodBank />} label={r.cuisine} size="small" sx={{ margin: 0.5 }} />
-                        <Chip icon={<LocationOn />} label={"1.5 mi"} size="small" sx={{ margin: 0.5 }} />
+                        <Chip icon={<LocationOn />} label={r.zipcode} size="small" sx={{ margin: 0.5 }} />
                     </Box>
+                    <img style={{ position: 'absolute', right: 0, top: 0, height: '100%' }} alt="restaurant" src={r.image} />
                 </ButtonBase>
             </Paper>))}
         </Box>

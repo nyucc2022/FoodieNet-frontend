@@ -70,7 +70,7 @@ export default function Router() {
       </Routes>
 
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.modal + 1 }}
         open={backDropStatus}
       >
         <CircularProgress color="inherit" />

@@ -1,14 +1,14 @@
 import * as React from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Input, InputLabel, Slider, TextField } from '@mui/material';
-import { IRestaurant } from '../../../../api/interface';
+import { ICreateGroup, IRestaurant } from '../../../../api/interface';
 import { LocalizationProvider, MobileDateTimePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 export interface ISetupDialog {
     open: boolean;
     restaurant: IRestaurant;
-    handleClose: (data: { [name: string]: any } | null) => void;
+    handleClose: (data: ICreateGroup | null) => void;
 }
 
 export default function SetupDialog({ open, restaurant, handleClose }: ISetupDialog) {
@@ -18,11 +18,14 @@ export default function SetupDialog({ open, restaurant, handleClose }: ISetupDia
 
     const onClose = () => handleClose(null);
     const onSubmit = () => handleClose({
-        name, size, date,
+        groupName: name,
+        totalSize: size,
+        startTime: date.getTime(),
+        restaurantId: restaurant.id,
     });
 
     return (<Dialog open={open} onClose={onClose} fullWidth>
-        <DialogTitle>Create your group</DialogTitle>
+        <DialogTitle>{restaurant?.name}</DialogTitle>
         <DialogContent sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -38,7 +41,7 @@ export default function SetupDialog({ open, restaurant, handleClose }: ISetupDia
                 step={1}
                 marks
                 min={2}
-                max={20}
+                max={10}
                 valueLabelDisplay="auto"
             />
 

@@ -1,102 +1,93 @@
-import { currentUser, post } from './amplify';
+import { currentUser, getUser, post } from './amplify';
 import * as Interface from './interface';
-import { call, choose } from './utils';
+import { call } from './utils';
 
 export const getMe = (): Interface.IUser => {
     const username = currentUser()?.username || '';
-    return {
-        id: username,
-        name: username,
-    };
+    return { username };
 }
 
 export const isMe = (user?: Interface.IUser): boolean => {
-    return getMe().id === user?.id;
+    return getMe().username === user?.username;
 }
 
-export const request = async <T=any>(endpoint: string, payload: any): Promise<T | null> => {
+export const request = async <T=any>(endpoint: string, payload: object, should: 'string' | 'number' | 'object' | 'array'): Promise<T> => {
+    let data = undefined as any;
     try {
-        return await post(endpoint, payload);
+        data = await post(endpoint, payload);
     } catch(err) {
         console.error(err);
-        call('openSnackBar', 'Cannot fetch api, please check your network', 'error');
-        return null;
-    }
-}
-
-// TODO: mock data
-export const getChatGroups = async (): Promise<Interface.IGroupInfo[]> => {
-    return Promise.all(Array(25).fill(0).map((_, i) => getChatGroupById(i)));
-}
-
-export const getChatGroupById = async (groupId: number): Promise<Interface.IGroupInfo> => {
-    return {
-        groupId,
-        state: groupId % 2 ? 'completed' : 'inprogress',
-        groupName: `Random Group ${groupId}`,
-        totalParticipants: 8,
-        currentParticipants: 8,
-        rated: [],
-        participants: await getGroupUsers(groupId),
-        restaurant: {
-            id: genRandomWords(1),
-            name: `${genRandomWords(2)} Restaurant`,
-            cuisine: 'Japanese',
-            address: '5 MetroTech Center',
-            zipCode: 11201,
-            image: '',
-        },
-    };
-}
-
-export const searchGroup = async (options?: Interface.ISearchOptions): Promise<Interface.IGroupInfo[]> => {
-    return Promise.all(Array(20).fill(0).map((_, i) => getChatGroupById(i)));
-}
-
-export const searchRestaurant = async (keyword: string): Promise<Interface.IRestaurant[]> => {
-    return searchGroup({ keyword }).then(x => x.map(c => c.restaurant));
-}
-
-const chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-export const genRandomWords = (length: number) => {
-    let words = "";
-    for (let i = 0; i < 2 + Math.floor(Math.random() * (length - 2)); ++i) {
-        if (words) words += ' ';
-        const wordLength = 4 + Math.floor(Math.random() * 6);
-        for (let j = 0; j < wordLength; ++j) {
-            words += choose(chars);
+        if (await getUser()) {
+            call('openSnackBar', 'Cannot fetch api, please check your network.', 'error');
+        } else {
+            call('openSnackBar', 'User session expired, please log in again.', 'error');
+            call('logout');
         }
     }
-    return words;
-}
 
-const users = ['Self', 'Sam', 'Jack', 'Peter', 'Alex'];
-
-// TODO: mock data
-export const getMessages = async (groupId: number): Promise<Interface.IChatInfo> => {
-    return {
-        groupId,
-        messages: Array(25).fill(0).map(() => choose(users)).map((sender, i) => ({
-            sender: {
-                name: sender,
-                id: sender,
-            },
-            text: genRandomWords(12),
-            messageId: 1+i,
-        })),
+    const typing = Array.isArray(data) ? 'array' : typeof data;
+    if (typing !== should) {
+        if (data) {
+            console.warn(`Server Responding Error: expect '${should}' but get:`, data)
+        }
+        switch (should) {
+            case 'array':
+                data = [];
+                break;
+            case 'object':
+                data = {};
+                break;
+            case 'string':
+                data = '';
+                break;
+            case 'number':
+                data = 0;
+                break;
+        }
     }
+    return data;
 }
 
-export const sendMessage = async (groupId: number, message: string): Promise<any> => {
+export const getChatGroupById = async (groupId: string): Promise<Interface.IGroupInfo> => {
+    return await request("/getGroup", { groupId }, 'object');
+}
+
+export const createGroup = async (params: Interface.ICreateGroup) => {
+    return await request<{ groupId: string }>("/creategroup", params, 'object');
+}
+
+export const searchGroups = async (options: Interface.ISearchOptions): Promise<Interface.IGroupInfo[]> => {
+    return await request("/searchgroup", options, 'array');
+}
+
+export const joinGroup = async (groupId: string) => {
+    return await request("/joingroup", { groupId, username: '{{@username}}', }, 'string');
+}
+
+export const searchRestaurants = async (params: {name: string, cuisine?: string[]}): Promise<Interface.IRestaurant[]> => {
+    return await request("/searchrestaurant", params, 'array');
+}
+
+export const getMessages = async (groupId: string): Promise<Interface.IChatInfo> => {
+    return await request("/getmessages", {
+        groupId,
+    }, 'object');
+}
+
+export const sendMessage = async (groupId: string, message: string): Promise<Interface.IMessage> => {
     return await request("/sendmessages", {
         groupId, message,
-    });
+    }, 'object');
 }
 
-// TODO: mock data
-export const getGroupUsers = async (groupId: number): Promise<Interface.IUser[]> => {
-    return users.map((u, i) => ({
-        id: u,
-        name: u,
-    }));
+export const rateUser = async (groupId: string, username: string, rate: number) => {
+    return await request("/rateuser", {
+        groupId, username, rate,
+    }, 'object');
+}
+
+export const getProfile = async (username: string): Promise<Interface.IUserProfile> => {
+    return await request("/getprofile", {
+        username,
+    }, 'object');
 }

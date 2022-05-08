@@ -1,26 +1,50 @@
 export interface IRestaurant {
     id: string;
-    cuisine: string;
     name: string;
+    cuisine: string;
     address: string;
-    zipCode: number;
+    zipcode: number;
+    longitude?: number;
+    latitude?: number;
     image: string;
 }
 
-export interface IGroupInfo {
-    groupId: number;
-    state: 'completed' | 'inprogress';
+export interface ICreateGroup {
     groupName: string;
-    totalParticipants: number;
-    currentParticipants: number;
+    totalSize: number;
+    startTime: number;
+    restaurantId: string;
+}
+
+export interface IGroupInfo {
+    groupId: string;
+    groupName: string;
+    ownerName: string;
+
+    startTime: Date;
+    state: 'notstart' | 'inprogress' | 'completed' | 'done';
+    
+    totalSize: number;
+    currentSize: number;
+
     participants: IUser[];
-    rated: number[];
+    reviewedUserList: string[];
+    currentGroupCredit: number;
+    status: number;
+    statusChangeTime: string;
+
     restaurant: IRestaurant;
 }
 
 export interface IUser {
-    name: string;
-    id: string;
+    username: string;
+    email?: string;
+}
+
+export interface IUserProfile extends IUser {
+    ratingtotal: number;
+    ratingtime: number;
+    rating: number;
 }
 
 export interface IMessage {
@@ -30,15 +54,21 @@ export interface IMessage {
 }
 
 export interface IChatInfo {
-    groupId: number;
+    groupId: string;
     messages: IMessage[];
 }
 
 export interface ISearchOptions {
-    timeRange?: [Date, Date];
-    creditRange?: [number, number];
+    startTimeRange?: [Date, Date];
+    groupCreditRange?: [number, number];
     sizeRange?: [number, number];
-    distance?: number;
-    cuisine?: string;
+    distanceRange?: [number, number];
+    cuisineTypeList?: string[];
     keyword?: string;
+
+    // get by group id
+    groupId?: string;
+
+    // get by user
+    myGroupFlag?: number;
 }

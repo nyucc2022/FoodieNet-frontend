@@ -2,10 +2,9 @@ import { Send } from '@mui/icons-material';
 import { Box, Button, TextField } from '@mui/material';
 import * as React from 'react';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
-import { getChatGroupById, getMessages, isMe as isMeApi, sendMessage } from '../../../api/api';
+import { getChatGroupById, getMessages, isMe as isMeApi, rateUser, sendMessage } from '../../../api/api';
 import { IChatInfo, IGroupInfo } from '../../../api/interface';
 import AppContext from '../../../api/state';
-import { sleep } from '../../../api/utils';
 
 import Title from '../../../components/title';
 import RatingDialog from './rating';
@@ -16,7 +15,7 @@ export default function ChatRoom() {
     const location = useLocation();
 
     const matches = matchRoutes([{ path: '/dashboard/chat/:groupId' }], location);
-    const groupId = parseInt(matches?.[0].params.groupId!, 10) || 0;
+    const groupId = matches?.[0].params.groupId || '0';
 
     const ctx = React.useContext(AppContext);
     const [input, setInput] = React.useState<string>('');
@@ -24,18 +23,20 @@ export default function ChatRoom() {
     const [groupData, setGroupData] = React.useState<IGroupInfo | null>(null);
     const [ratingOpen, setRatingOpen] = React.useState<boolean>(false);
 
+    const fetchMessage = React.useMemo(() => (async (block = false) => {
+        block && ctx.setBackDropStatus?.(true);
+        const groupData = await getChatGroupById(groupId);
+        setData(await getMessages(groupId));
+        setGroupData(groupData);
+        setRatingOpen(groupData?.state === 'completed');
+        block && ctx.setBackDropStatus?.(false);
+        // eslint-disable-next-line
+    }), [groupId]);
+
     React.useEffect(() => {
         init = 0;
-        (async () => {
-            ctx.setBackDropStatus?.(true);
-            await sleep(1000);
-            const groupData = await getChatGroupById(groupId);
-            setData(await getMessages(groupId));
-            setGroupData(groupData);
-            setRatingOpen(groupData?.state === 'completed' && !groupData?.rated?.includes(0));
-            ctx.setBackDropStatus?.(false);
-        })();
-    // eslint-disable-next-line
+        fetchMessage(true);
+        // eslint-disable-next-line
     }, [groupId]);
 
     React.useEffect(() => {
@@ -55,15 +56,7 @@ export default function ChatRoom() {
     const handleSendClick = async () => {
         if (input) {
             console.log(await sendMessage(groupId, input));
-            data?.messages.push({
-                messageId: Date.now(),
-                sender: {
-                    id: 'Self',
-                    name: 'Self',
-                },
-                text: input,
-            });
-            setData({...data} as IChatInfo);
+            await fetchMessage(false);
             setInput('');
         }
     }
@@ -75,7 +68,7 @@ export default function ChatRoom() {
         } else {
             // TODO: submit rate
             ctx.setBackDropStatus?.(true);
-            await sleep(1000);
+            await rateUser(groupId, '', 1);
             ctx.setBackDropStatus?.(false);
         }
     }
@@ -85,10 +78,10 @@ export default function ChatRoom() {
     return (<>
         <Title innerRef={titleRef}>{`ChatRoom: ${groupId}`}</Title>
         <Box sx={{ padding: 2, marginTop: -2, paddingBottom: '60px', display: 'flex', flexDirection: 'column' }}>
-            {data?.messages.map(msg => {
+            {(data?.messages || []).map(msg => {
                 const isMe = isMeApi(msg.sender);
-                const sameUser = lastUserId === msg.sender.id;
-                lastUserId = msg.sender.id;
+                const sameUser = lastUserId === msg.sender.username;
+                lastUserId = msg.sender.username;
 
                 return (<Box
                     key={msg.messageId}
@@ -109,7 +102,7 @@ export default function ChatRoom() {
                             opacity: 0.75,
                             fontSize: 12,
                             fontWeight: 600
-                        }}>{msg.sender.name}</Box>) : null}
+                        }}>{msg.sender.username}</Box>) : null}
                     <Box sx={{
                         background: isMe ? 'rgb(46, 125, 50)' : '#556cd6',
                         borderRadius: '16px',

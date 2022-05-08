@@ -4,6 +4,7 @@ import { Avatar, Box, Button, Divider, Paper } from '@mui/material';
 import AppContext from '../../../api/state';
 import { getUserInfo } from '../../../api/amplify';
 import { call } from '../../../api/utils';
+import { getProfile } from '../../../api/api';
 
 export default function Profile() {
     const ctx = React.useContext(AppContext);
@@ -13,17 +14,21 @@ export default function Profile() {
     const [rating, setRating] = React.useState(5);
 
     React.useEffect(() => {
-        getUserInfo().then(data => {
-            if (!data) {
-                throw new Error('User not logged in.');
+        (async () => {
+            try {
+                const data = await getUserInfo();
+                if (!data) {
+                    throw new Error('User not logged in.');
+                }
+                setName(data.username);
+                setEmail(data.attributes.email);
+                const profile = await getProfile(data.username);
+                setRating(profile.rating || 0);
+            } catch(err) {
+                ctx.openSnackBar?.(`${err}`, 'error');
+                ctx.logout?.();
             }
-            setName(data.username);
-            setEmail(data.attributes.email);
-            setRating(4.4);
-        }).catch(err => {
-            ctx.openSnackBar?.(`${err}`, 'error');
-            ctx.logout?.();
-        })
+        })();
         // eslint-disable-next-line
     }, []);
 
@@ -37,7 +42,7 @@ export default function Profile() {
             <h1>{name}</h1>
             <Paper elevation={1} sx={{ width: '86%', padding: 3 }}>
                 <h3 style={{ margin: 0, marginBottom: 12 }}>Information</h3>
-                <Box>Email: <span style={{float: 'right'}}>{email}</span></Box>
+                <Box>Email: <span style={{float: 'right'}}>{email || 'N/A'}</span></Box>
                 <Box>Credit: <span style={{float: 'right'}}>{rating}/5</span></Box>
 
                 <Divider sx={{ marginY: 3}} />
