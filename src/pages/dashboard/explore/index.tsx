@@ -4,13 +4,14 @@ import * as React from 'react';
 import Title from '../../../components/title';
 import SearchIcon from '@mui/icons-material/Search'
 import { IGroupInfo } from '../../../api/interface';
-import { searchGroup, sleep } from '../../../api/api';
+import { searchGroup } from '../../../api/api';
 import { CreditScore, FoodBank, LocationOn } from '@mui/icons-material';
 import AppContext from '../../../api/state';
 import PillSelector from '../../../components/pillSelector';
 import PillRanger from '../../../components/pillRanger';
 
 import { debounce } from 'lodash';
+import { sleep } from '../../../api/utils';
 
 let savedParams: any = {};
 

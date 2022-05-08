@@ -20,7 +20,7 @@ export interface IGroupInfo {
 
 export interface IUser {
     name: string;
-    id: number;
+    id: string;
 }
 
 export interface IMessage {

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Avatar, Box, Button, Divider, Paper } from '@mui/material';
 import AppContext from '../../../api/state';
 import { currentUsername, getUserAttributes } from '../../../api/cognito';
-import { call } from '../../../api/api';
+import { call } from '../../../api/utils';
 
 export default function Profile() {
     const ctx = React.useContext(AppContext);
@@ -21,6 +21,7 @@ export default function Profile() {
             ctx.openSnackBar?.(`${err}`, 'error');
             ctx.logout?.();
         })
+        // eslint-disable-next-line
     }, [currentUsername()]);
 
     return (<>

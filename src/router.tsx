@@ -8,8 +8,8 @@ import Landing from './pages/landing';
 import Dashboard from './pages/dashboard';
 import SignIn from './pages/signin';
 import SignUp from './pages/signup';
-import { currentUser, getUser, signOut } from './api/cognito';
-import { call } from './api/api';
+import { getUser, signOut } from './api/cognito';
+import { assign, call } from './api/utils';
 
 export default function Router() {
   const navigate = useNavigate();
@@ -28,11 +28,12 @@ export default function Router() {
   }
 
   React.useEffect(() => {
-    getUser().then(user => {
+    getUser().then(({ user }) => {
       if (!user && location.pathname.startsWith('/dashboard')) {
         navigate('/');
       }
     });
+    // eslint-disable-next-line
   }, []);
 
   const helpers = {
@@ -52,10 +53,8 @@ export default function Router() {
     navigate: (path: string) => {
       navigate(path);
     }
-  }
-  
-  // @ts-ignore
-  window.helpers = helpers;
+  };
+  assign("helpers", helpers);
 
   return (
     <AppContext.Provider value={helpers}>

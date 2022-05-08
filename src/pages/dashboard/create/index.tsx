@@ -4,13 +4,14 @@ import * as React from 'react';
 import Title from '../../../components/title';
 import SearchIcon from '@mui/icons-material/Search'
 import { IRestaurant } from '../../../api/interface';
-import { searchRestaurant, sleep } from '../../../api/api';
+import { searchRestaurant } from '../../../api/api';
 import { FoodBank, LocationOn } from '@mui/icons-material';
 import SetupDialog from './setup';
 import AppContext from '../../../api/state';
 import { useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import PillSelector from '../../../components/pillSelector';
+import { sleep } from '../../../api/utils';
 
 let savedParams: any = {};
 

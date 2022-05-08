@@ -1,42 +1,15 @@
-import { getUser } from './cognito';
+import { currentUser, getUser } from './cognito';
 import * as Interface from './interface';
+import { call, choose } from './utils';
 
-export const choose = <T>(list: T[] | string) => {
-    return list[Math.floor(Math.random() * list.length)];
-}
-
-export const sleep = (timeout: number): Promise<void> => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, timeout);
-    });
-}
-
-export const waitUntil = async (cond: Function, interval = 10) => {
-    if (!cond || typeof cond !== "function" || interval < 10) return;
-    while (!cond()) {
-        await sleep(interval);
-    }
-}
-
-export const Counter = () => {
-    let counter = 0;
-    return {
-        reset: () => counter = 0,
-        add: (num = 1) => counter += num,
-        dec: (num = 1) => { counter -= num; if (counter < 0) counter = 0; return counter; },
-    }
-}
+const BASEURL = 'https://httpbin.org';
 
 export const getMe = (): Interface.IUser => {
+    const username = currentUser()?.getUsername() || '';
     return {
-        id: 0,
-        name: 'Self',
+        id: username,
+        name: username,
     };
-}
-
-export const call = (fn: string, ...args: any[]) => {
-    // @ts-ignore
-    return window.helpers?.[fn]?.(...args);
 }
 
 export const isMe = (user?: Interface.IUser): boolean => {
@@ -44,11 +17,17 @@ export const isMe = (user?: Interface.IUser): boolean => {
 }
 
 export const request = async <T=any>(endpoint: string, payload: any): Promise<T | null> => {
+    const { session } = await getUser(true);
+    if (!session) return null;
 
+    const token = `Bearer ${session.getIdToken().getJwtToken()}`;
     try {
-        const req = await fetch(`/${endpoint}`, {
+        const req = await fetch(`${BASEURL}${endpoint}`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Amz-Token': token,
+                'Authorization': token,
             },
             body: JSON.stringify(payload),
         });
@@ -88,6 +67,7 @@ export const getChatGroupById = async (groupId: number): Promise<Interface.IGrou
 }
 
 export const searchGroup = async (options?: Interface.ISearchOptions): Promise<Interface.IGroupInfo[]> => {
+    await request('/anything', {});
     return Promise.all(Array(20).fill(0).map((_, i) => getChatGroupById(i)));
 }
 
@@ -117,7 +97,7 @@ export const getMessages = async (groupId: number): Promise<Interface.IChatInfo>
         messages: Array(25).fill(0).map(() => choose(users)).map((sender, i) => ({
             sender: {
                 name: sender,
-                id: users.indexOf(sender),
+                id: sender,
             },
             text: genRandomWords(12),
             messageId: 1+i,
@@ -128,7 +108,7 @@ export const getMessages = async (groupId: number): Promise<Interface.IChatInfo>
 // TODO: mock data
 export const getGroupUsers = async (groupId: number): Promise<Interface.IUser[]> => {
     return users.map((u, i) => ({
-        id: i,
+        id: u,
         name: u,
     }));
 }

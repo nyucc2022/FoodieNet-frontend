@@ -11,7 +11,7 @@ export interface IRatingDialog {
 }
 
 export default function RatingDialog({ open, users, handleClose }: IRatingDialog) {
-    const data: { [name: number]: number } = {};
+    const data: { [id: string]: number } = {};
 
     const onClose = () => handleClose(null);
     const onSubmit = () => handleClose(data);

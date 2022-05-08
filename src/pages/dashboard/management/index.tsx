@@ -5,9 +5,10 @@ import { List, ListSubheader } from '@mui/material';
 import Title from '../../../components/title';
 import ChatCard from '../../../components/chatCard';
 
-import { getChatGroups, sleep } from '../../../api/api';
+import { getChatGroups } from '../../../api/api';
 import { IGroupInfo } from '../../../api/interface';
 import AppContext from '../../../api/state';
+import { sleep } from '../../../api/utils';
 
 export default function Management() {
     const [data, setData] = useState<IGroupInfo[]>([]);

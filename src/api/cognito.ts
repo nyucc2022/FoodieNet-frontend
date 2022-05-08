@@ -1,7 +1,7 @@
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
-import { reject } from 'lodash';
-import { Counter, waitUntil } from './api';
+import { assign, waitUntil, EventCounter } from './utils';
 
+let activeProcess = EventCounter();
 const poolData = {
 	UserPoolId: 'us-east-1_mTFY5PaNg',
 	ClientId: '1naa0iopcjui825555sqj24vvl',
@@ -10,10 +10,18 @@ const poolData = {
 export const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
 export const currentUser = () => poll.user;
+export const currentSession = () => poll.session;
 
 const poll = {
-    user: <AmazonCognitoIdentity.CognitoUser | null>null,
+    user: null as AmazonCognitoIdentity.CognitoUser | null,
+    session: null as AmazonCognitoIdentity.CognitoUserSession | null,
+    clear: function () {
+        this.user?.signOut();
+        this.user = null;
+        this.session = null;
+    }
 };
+assign("poll", poll);
 
 export const activateUser = (): Promise<AmazonCognitoIdentity.CognitoUser | null> => {
     return new Promise((resolve) => {
@@ -21,18 +29,16 @@ export const activateUser = (): Promise<AmazonCognitoIdentity.CognitoUser | null
         if (user) {
             user.getSession((_: any, session: AmazonCognitoIdentity.CognitoUserSession) => {
                 if (!(session && session.isValid())) {
-                    user.signOut();
-                    poll.user = null;
+                    poll.clear();
                     resolve(null);
                 } else {
                     poll.user = user;
-                    // @ts-ignore
-                    window['session'] = session;
+                    poll.session = session;
                     resolve(user);
                 }
             })
         } else {
-            poll.user = null;
+            poll.clear();
             resolve(null);
         }
     }).then((v: any) => {
@@ -40,30 +46,32 @@ export const activateUser = (): Promise<AmazonCognitoIdentity.CognitoUser | null
     });
 }
 
-let activeProcess = Counter();
 export const getUser = async (waits = false) => {
+    const returns = () => ({
+        user: poll.user,
+        session: poll.session,
+    });
     const shouldWait = waits && !poll.user;
     if (poll.user) {
         console.log(">> getUser Cached");
         activeProcess.dec();
-        return poll.user;
+        return returns();
     } else if (activeProcess.add(shouldWait ? 0.01 : 1) > 1.99) {
         console.log(">> getUser Await");
         await waitUntil(() => poll.user);
         activeProcess.dec();
-        return poll.user;
+        return returns();
     }
     
     console.log(">> getUser Fetch");
     const user = await activateUser();
     activeProcess.reset();
-    console.log("<< getUser:", user);
-    return user;
+    console.log("<< getUser");
+    return returns();
 }
 
 export const signOut = () => {
-    currentUser()?.signOut();
-    poll.user = null;
+    poll.clear();
 }
 
 export const currentUsername = () => currentUser()?.getUsername() || '';
@@ -71,7 +79,7 @@ export const currentUsername = () => currentUser()?.getUsername() || '';
 export const getUserAttributes = async (): Promise<any> => {
     const result = {} as {[key: string]: string};
     return new Promise(async (resolve, reject) => {
-        const user = await getUser(true);
+        const { user } = await getUser(true);
         if (!user) {
             reject(new Error('Error: Cannot get logined user'));
             return;
@@ -119,7 +127,7 @@ export const signIn = async (username: string, password: string): Promise<Amazon
                 if (user) {
                     resolve(user);
                 } else {
-                    reject(new Error("Auth Error: cannot fetch user info."))
+                    onFailure(new Error("Auth Error: cannot fetch user info."))
                 }
             },
             onFailure,

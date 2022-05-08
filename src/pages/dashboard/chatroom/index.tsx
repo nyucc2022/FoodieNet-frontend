@@ -2,9 +2,10 @@ import { Send } from '@mui/icons-material';
 import { Box, Button, TextField } from '@mui/material';
 import * as React from 'react';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
-import { getChatGroupById, getMessages, isMe as isMeApi, sleep } from '../../../api/api';
+import { getChatGroupById, getMessages, isMe as isMeApi } from '../../../api/api';
 import { IChatInfo, IGroupInfo } from '../../../api/interface';
 import AppContext from '../../../api/state';
+import { sleep } from '../../../api/utils';
 
 import Title from '../../../components/title';
 import RatingDialog from './rating';
@@ -56,7 +57,7 @@ export default function ChatRoom() {
             data?.messages.push({
                 messageId: Date.now(),
                 sender: {
-                    id: 0,
+                    id: 'Self',
                     name: 'Self',
                 },
                 text: input,
@@ -78,7 +79,7 @@ export default function ChatRoom() {
         }
     }
 
-    let lastUserId: number = -1;
+    let lastUserId: string = '<N/A>';
 
     return (<>
         <Title innerRef={titleRef}>{`ChatRoom: ${groupId}`}</Title>
