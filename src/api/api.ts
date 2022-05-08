@@ -17,7 +17,7 @@ export const getMe = (): Interface.IUser => {
     };
 }
 
-export const call = (fn: string, ...args: string[]) => {
+export const call = (fn: string, ...args: any[]) => {
     // @ts-ignore
     return window.helpers?.[fn]?.(...args);
 }

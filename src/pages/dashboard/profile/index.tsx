@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import { Avatar, Box, Divider, Paper } from '@mui/material';
+import { Avatar, Box, Button, Divider, Paper } from '@mui/material';
 import AppContext from '../../../api/state';
 import { currentUsername, getUserAttributes } from '../../../api/cognito';
+import { call } from '../../../api/api';
 
 export default function Profile() {
     const ctx = React.useContext(AppContext);
@@ -38,6 +39,10 @@ export default function Profile() {
                 <Divider sx={{ marginY: 3}} />
                 <h3 style={{ margin: 0, marginBottom: 12 }}>Grouping History</h3>
             </Paper>
+
+            <Button sx={{ width: '86%', marginTop: 5 }} size="large" variant="contained" color="error" onClick={() => call("logout", true)}>
+                Log Me Out
+            </Button>
         </Box>
     </>);
 }

@@ -9,6 +9,7 @@ import Dashboard from './pages/dashboard';
 import SignIn from './pages/signin';
 import SignUp from './pages/signup';
 import { activateUser, currentUser } from './api/cognito';
+import { call } from './api/api';
 
 export default function Router() {
   const navigate = useNavigate();
@@ -41,9 +42,12 @@ export default function Router() {
       setSnackBarMessage(message);
       setSnackBarStatus(true);
     },
-    logout: () => {
+    logout: (showMessage = false) => {
       currentUser()?.signOut();
       navigate('/');
+      if (showMessage) {
+        call("openSnackBar", "Success, you are logged out!");
+      }
     },
     navigate: (path: string) => {
       navigate(path);
