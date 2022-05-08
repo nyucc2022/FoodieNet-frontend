@@ -9,10 +9,10 @@ const poolData = {
 
 export const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-export const currentUser = () => poll.user;
-export const currentSession = () => poll.session;
+export const currentUser = () => pool.user;
+export const currentSession = () => pool.session;
 
-const poll = {
+const pool = {
     user: null as AmazonCognitoIdentity.CognitoUser | null,
     session: null as AmazonCognitoIdentity.CognitoUserSession | null,
     clear: function () {
@@ -21,7 +21,7 @@ const poll = {
         this.session = null;
     }
 };
-assign("poll", poll);
+assign("pool", pool);
 
 export const activateUser = (): Promise<AmazonCognitoIdentity.CognitoUser | null> => {
     return new Promise((resolve) => {
@@ -29,16 +29,16 @@ export const activateUser = (): Promise<AmazonCognitoIdentity.CognitoUser | null
         if (user) {
             user.getSession((_: any, session: AmazonCognitoIdentity.CognitoUserSession) => {
                 if (!(session && session.isValid())) {
-                    poll.clear();
+                    pool.clear();
                     resolve(null);
                 } else {
-                    poll.user = user;
-                    poll.session = session;
+                    pool.user = user;
+                    pool.session = session;
                     resolve(user);
                 }
             })
         } else {
-            poll.clear();
+            pool.clear();
             resolve(null);
         }
     }).then((v: any) => {
@@ -48,30 +48,30 @@ export const activateUser = (): Promise<AmazonCognitoIdentity.CognitoUser | null
 
 export const getUser = async (waits = false) => {
     const returns = () => ({
-        user: poll.user,
-        session: poll.session,
+        user: pool.user,
+        session: pool.session,
     });
-    const shouldWait = waits && !poll.user;
-    if (poll.user) {
+    const shouldWait = waits && !pool.user;
+    if (pool.user) {
         console.log(">> getUser Cached");
         activeProcess.dec();
         return returns();
     } else if (activeProcess.add(shouldWait ? 0.01 : 1) > 1.99) {
         console.log(">> getUser Await");
-        await waitUntil(() => poll.user);
+        await waitUntil(() => pool.user);
         activeProcess.dec();
         return returns();
     }
     
     console.log(">> getUser Fetch");
-    const user = await activateUser();
+    await activateUser();
     activeProcess.reset();
     console.log("<< getUser");
     return returns();
 }
 
 export const signOut = () => {
-    poll.clear();
+    pool.clear();
 }
 
 export const currentUsername = () => currentUser()?.getUsername() || '';

@@ -26,7 +26,7 @@ export default function SignUp() {
 
         ctx.setBackDropStatus?.(true);
         try {
-            const result = await signUp(username, password, {
+            await signUp(username, password, {
                 email,
             });
             ctx.openSnackBar?.(`Success, please use your username and password to login!`, "success");
