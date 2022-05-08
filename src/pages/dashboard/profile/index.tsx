@@ -29,7 +29,7 @@ export default function Profile() {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            <Avatar sx={{ width: 120, height: 120, fontSize: 40, fontWeight: 700, marginTop: 10 }} >H</Avatar>
+            <Avatar sx={{ width: 120, height: 120, fontSize: 40, fontWeight: 700, marginTop: 10 }} >{(name || 'A')[0].toLocaleUpperCase()}</Avatar>
             <h1>{name}</h1>
             <Paper elevation={1} sx={{ width: '86%', padding: 3 }}>
                 <h3 style={{ margin: 0, marginBottom: 12 }}>Information</h3>

@@ -30,6 +30,8 @@ export default function CreateGroup() {
         // eslint-disable-next-line
     }, 200), []);
 
+    React.useEffect(() => { savedParams = {} }, []);
+
     const doSearch = async (param: string, params?: any) => {
         setSearchResult(null);
         if (params) {

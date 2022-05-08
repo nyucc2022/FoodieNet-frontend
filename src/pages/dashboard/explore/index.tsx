@@ -40,6 +40,7 @@ export default function Explore() {
 
     React.useEffect(() => {
         doSearch('');
+        savedParams = {};
     // eslint-disable-next-line
     }, []);
 
