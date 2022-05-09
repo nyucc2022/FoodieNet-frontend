@@ -1,5 +1,5 @@
 import { Send } from '@mui/icons-material';
-import { Box, Button, Link, Paper, TextField } from '@mui/material';
+import { Avatar, Box, Button, Link, Paper, TextField } from '@mui/material';
 import * as React from 'react';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
 import { getChatGroupById, getMessages, isMe as isMeApi, rateUser, sendMessage } from '../../../api/api';
@@ -134,23 +134,29 @@ export default function ChatRoom() {
                         alignItems: isMe ? 'end' : 'inherit',
                     }}
                 >
-                    {!sameUser ?
-                        (<Box component="span" sx={{
-                            marginLeft: 1,
-                            marginBottom: 0.3,
-                            opacity: 0.75,
-                            fontSize: 12,
-                            fontWeight: 600
-                        }}>{msg.username}</Box>) : null}
-                    <Box sx={{
-                        background: isMe ? 'rgb(46, 125, 50)' : '#556cd6',
-                        borderRadius: '16px',
-                        color: 'white',
-                        padding: '8px 12px',
-                        fontSize: '14px',
-                        wordBreak: 'break-word',
+                    <Box component="div" sx={{
+                        display: 'flex',
                     }}>
-                        {msg.message}
+                        {!isMe ?
+                            !sameUser
+                            ? <Link href={`/dashboard/profile/${msg.username}`}><Avatar sx={{
+                                    width: 34, height: 34,
+                                    fontSize: 16, fontWeight: 500,
+                                    mx: 1,
+                                }} >{(msg.username || ' ')[0].toLocaleUpperCase()}</Avatar></Link>
+                            : <Box sx={{width: 34, height: 34, mx: 1}}/>
+                        : null}
+                        <Box sx={{
+                            background: isMe ? 'rgb(46, 125, 50)' : '#556cd6',
+                            borderRadius: '16px',
+                            color: 'white',
+                            padding: '8px 12px',
+                            fontSize: '14px',
+                            wordBreak: 'break-word',
+                            ...(!isMe ? {maxWidth: '85%'} : null),
+                        }}>
+                            {msg.message}
+                        </Box>
                     </Box>
                 </Box>)
             }) || null}
