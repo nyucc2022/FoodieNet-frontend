@@ -107,7 +107,7 @@ export default function CreateGroup() {
                 </Box>: null}
             
             {searchResult?.map(r => (<Paper
-                key={r.id || (r.name + r.address)}
+                key={r.rid || (r.name + r.address)}
                 sx={{ display: 'flex', flexDirection: 'column', marginBottom: 2, }}
                 elevation={1}
             >

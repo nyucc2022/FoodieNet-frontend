@@ -15,7 +15,7 @@ interface IChatCard {
 }
 
 export default function ChatCard({ data, classNames='', style={} }: IChatCard) {
-    const archived = data.state === 'completed';
+    const archived = !data.active;
     const unread = Math.floor(Math.random());
     const navigate = useNavigate();
 

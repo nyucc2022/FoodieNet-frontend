@@ -20,8 +20,8 @@ export default function SetupDialog({ open, restaurant, handleClose }: ISetupDia
     const onSubmit = () => handleClose({
         groupName: name,
         totalSize: size,
-        startTime: date.getTime(),
-        restaurantId: restaurant.id,
+        startTime: parseInt(date.getTime() / 1000 as any, 10),
+        restaurantId: restaurant.rid,
     });
 
     return (<Dialog open={open} onClose={onClose} fullWidth>

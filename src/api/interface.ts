@@ -1,5 +1,5 @@
 export interface IRestaurant {
-    id: string;
+    rid: string;
     name: string;
     cuisine: string;
     address: string;
@@ -22,7 +22,8 @@ export interface IGroupInfo {
     ownerName: string;
 
     startTime: Date;
-    state: 'notstart' | 'inprogress' | 'completed' | 'done';
+    active: boolean;
+    state: 'Grouping Up' | 'Ready To Go!' | 'Rate You Mates' | 'Done';
     
     totalSize: number;
     currentSize: number;
@@ -66,5 +67,5 @@ export interface ISearchOptions {
     groupId?: string;
 
     // get by user
-    myGroupFlag?: number;
+    myGroupFlag?: boolean;
 }

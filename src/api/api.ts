@@ -58,16 +58,37 @@ export const createGroup = async (params: Interface.ICreateGroup) => {
     return await request<{ groupId: string }>("/creategroup", params, 'object');
 }
 
+export const postProcessGroupInfo = (gi: Interface.IGroupInfo): Interface.IGroupInfo => {
+    if (!gi) return gi;
+    let active = true;
+    let state: Interface.IGroupInfo['state'] = 'Grouping Up';
+    if (gi.status) {
+        state = 'Ready To Go!';
+        if (parseInt(gi.startTime as any, 10) * 1000 + 2 * 60 * 60 * 1000 >= Date.now()) {
+            active = false;
+            state = 'Rate You Mates';
+            if (gi.reviewedUserList.includes(getMe().username)) {
+                state = 'Done';
+            }
+        }
+    }
+
+    gi.active = active;
+    gi.state = state;
+
+    return gi;
+}
+
 export const searchGroups = async (options: Interface.ISearchOptions): Promise<Interface.IGroupInfo[]> => {
-    return await request("/searchgroup", options, 'array');
+    return (await request("/searchgroup", options, 'array')).map(postProcessGroupInfo);
 }
 
 export const getChatGroupById = async (groupId: string): Promise<Interface.IGroupInfo> => {
-    return (await searchGroups({ groupId }))[0] || {};
+    return postProcessGroupInfo((await searchGroups({ groupId }))[0] || {});
 }
 
 export const getMyGroups = async (): Promise<Interface.IGroupInfo[]> => {
-    return await searchGroups({ myGroupFlag: 1 });
+    return (await searchGroups({ myGroupFlag: true })).map(postProcessGroupInfo);
 }
 
 export const joinGroup = async (groupId: string) => {

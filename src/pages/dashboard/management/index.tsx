@@ -24,8 +24,8 @@ export default function Management() {
     // eslint-disable-next-line
     }, []);
 
-    const inProgress = data.filter(item => item.state !== 'completed');
-    const archived = data.filter(item => item.state === 'completed');
+    const inProgress = data.filter(item => item.active);
+    const archived = data.filter(item => !item.active);
 
     return (<>
         <Title>Management</Title>

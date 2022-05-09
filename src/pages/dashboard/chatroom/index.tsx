@@ -1,5 +1,5 @@
 import { Send } from '@mui/icons-material';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, Link, Paper, TextField } from '@mui/material';
 import * as React from 'react';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
 import { getChatGroupById, getMessages, isMe as isMeApi, rateUser, sendMessage } from '../../../api/api';
@@ -12,6 +12,8 @@ import RatingDialog from './rating';
 
 let init = 0;
 let lastSrollMessageId = '';
+
+const REFRESH = 100000;
 
 export default function ChatRoom() {
     const navigate = useNavigate();
@@ -37,8 +39,13 @@ export default function ChatRoom() {
         setData(messages);
         if (!messageOnly) {
             const groupData = await getChatGroupById(groupId);
-            setGroupData(groupData);
-            setRatingOpen(groupData?.state === 'completed');
+            if (!groupData.totalSize) {
+                call("openSnackBar", "Cannot get group info, please refresh your page.", "error");
+                call("navigate", "/dashboard/management");
+            } else {
+                setGroupData(groupData);
+                setRatingOpen(groupData?.state === 'Rate You Mates');
+            }
         }
         block && ctx.setBackDropStatus?.(false);
         // eslint-disable-next-line
@@ -51,7 +58,7 @@ export default function ChatRoom() {
 
         const itv = setInterval(() => {
             fetchMessage(false, true);
-        }, 1000);
+        }, REFRESH);
 
         return () => {
             clearInterval(itv);
@@ -101,9 +108,14 @@ export default function ChatRoom() {
     }
 
     let lastUserId: string = '<N/A>';
-
     return (<>
-        <Title innerRef={titleRef}>{`ChatRoom: ${groupId}`}</Title>
+        <Title style={{ fontSize: 26 }} innerRef={titleRef}>{`💬 ${groupData?.groupName || 'ChatRoom'}`}</Title>
+        <Paper elevation={1} sx={{ marginLeft: '3%', width: '94%', padding: 2 }}>
+            <Box sx={{ m: 0.5 }}><b>📝 Progress: <span style={{ color: groupData?.state ? '#2e7d32' : '#ffa400' }}>{groupData?.state}</span></b></Box>
+            <Box sx={{ m: 0.5 }}><b>👥 Grouping: <span style={{ color: groupData?.state ? '#2e7d32' : '#ffa400' }}>{groupData?.currentSize}</span>/{groupData?.totalSize}</b></Box>
+            <Box sx={{ m: 0.5 }}><b>🍚 Restaurant: </b>{groupData?.restaurant?.name} ({groupData?.restaurant?.cuisine})</Box>
+            <Box sx={{ m: 0.5 }}><b>🚗 Location: </b><Link href={`https://www.google.com/maps/place/${groupData?.restaurant?.address?.replaceAll?.(' ', '+')},+NY+${groupData?.restaurant?.zipcode}`}>{groupData?.restaurant?.address}, {groupData?.restaurant?.zipcode}</Link></Box>
+        </Paper>
         <Box sx={{ padding: 2, marginTop: -2, paddingBottom: '60px', display: 'flex', flexDirection: 'column' }}>
             {(data || []).map((msg: IMessage) => {
                 const isMe = isMeApi(msg.username);
@@ -136,6 +148,7 @@ export default function ChatRoom() {
                         color: 'white',
                         padding: '8px 12px',
                         fontSize: '14px',
+                        wordBreak: 'break-word',
                     }}>
                         {msg.message}
                     </Box>
@@ -153,6 +166,7 @@ export default function ChatRoom() {
                 value={input}
                 onChange={ele => setInput(ele.target.value)}
                 onKeyUp={ele => ele.key === 'Enter' && handleSendClick()}
+                disabled={!groupData?.active}
             />
             <Button sx={{ marginLeft: 1 }} color="primary" variant="contained" size="small" onClick={handleSendClick} disabled={!input}>
                 <Send />
