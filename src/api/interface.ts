@@ -21,7 +21,7 @@ export interface IGroupInfo {
     groupName: string;
     ownerName: string;
 
-    startTime: Date;
+    startTime: number;
     active: boolean;
     state: 'Grouping Up' | 'Ready To Go!' | 'Rate You Mates' | 'Done';
     
@@ -56,7 +56,7 @@ export interface IMessage {
 }
 
 export interface ISearchOptions {
-    startTimeRange?: [Date, Date];
+    startTimeRange?: [number, number];
     groupCreditRange?: [number, number];
     sizeRange?: [number, number];
     distanceRange?: [number, number];

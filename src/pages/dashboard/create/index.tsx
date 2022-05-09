@@ -12,17 +12,14 @@ import { useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import PillSelector from '../../../components/pillSelector';
 
-let savedParams: any = {
-    cuisine: [],
-    name: '',
-};
+let savedParams: any = {};
 
 export default function CreateGroup() {
     const navigate = useNavigate();
     const ctx = React.useContext(AppContext);
 
     const [keyword, setKeyword] = React.useState<string>('');
-    const [searchResult, setSearchResult] = React.useState<IRestaurant[] | null>([]);
+    const [searchResult, setSearchResult] = React.useState<IRestaurant[] | null>(null);
     const [setupRestaurant, setSetupRestaurant] = React.useState<IRestaurant | null>(null);
 
     const searchApiWithDebounce = React.useMemo(() => debounce(async (params: any = null) => {
@@ -37,7 +34,6 @@ export default function CreateGroup() {
             cuisine: [],
             name: '',
         };
-        setSearchResult(null);
         searchApiWithDebounce(savedParams);
         // eslint-disable-next-line
     }, []);
@@ -132,7 +128,7 @@ export default function CreateGroup() {
                         <Chip icon={<FoodBank />} label={r.cuisine} size="small" sx={{ margin: 0.5 }} />
                         <Chip icon={<LocationOn />} label={r.zipcode} size="small" sx={{ margin: 0.5 }} />
                     </Box>
-                    <img style={{ position: 'absolute', right: 0, top: 0, height: '100%' }} alt="restaurant" src={r.image} />
+                    <img style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '30%', objectFit: 'cover' }} alt="restaurant" src={r.image} />
                 </ButtonBase>
             </Paper>))}
         </Box>

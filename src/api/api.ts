@@ -93,7 +93,7 @@ export const getMyGroups = async (): Promise<Interface.IGroupInfo[]> => {
     return (await searchGroups({ myGroupFlag: true })).map(postProcessGroupInfo);
 }
 
-export const joinGroup = async (groupId: string) => {
+export const joinGroup = async (groupId: string): Promise<string>  => {
     return await request("/joingroup", { groupId, username: '{{@username}}', }, 'string');
 }
 

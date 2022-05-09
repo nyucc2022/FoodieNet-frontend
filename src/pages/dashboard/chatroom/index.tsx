@@ -113,6 +113,7 @@ export default function ChatRoom() {
         <Paper elevation={1} sx={{ marginLeft: '3%', width: '94%', padding: 2 }}>
             <Box sx={{ m: 0.5 }}><b>📝 Progress: <span style={{ color: groupData?.state ? '#2e7d32' : '#ffa400' }}>{groupData?.state}</span></b></Box>
             <Box sx={{ m: 0.5 }}><b>👥 Grouping: <span style={{ color: groupData?.state ? '#2e7d32' : '#ffa400' }}>{groupData?.currentSize}</span>/{groupData?.totalSize}</b></Box>
+            <Box sx={{ m: 0.5 }}><b>⏰ Schedule: </b>{new Date(1000 * (groupData?.startTime || (Date.now() / 1000))).toLocaleString()}</Box>
             <Box sx={{ m: 0.5 }}><b>🍚 Restaurant: </b>{groupData?.restaurant?.name} ({groupData?.restaurant?.cuisine})</Box>
             <Box sx={{ m: 0.5 }}><b>🚗 Location: </b><Link href={`https://www.google.com/maps/place/${groupData?.restaurant?.address?.replaceAll?.(' ', '+')},+NY+${groupData?.restaurant?.zipcode}`}>{groupData?.restaurant?.address}, {groupData?.restaurant?.zipcode}</Link></Box>
         </Paper>
