@@ -9,8 +9,8 @@ import { getProfile } from '../../../api/api';
 export default function Profile() {
     const ctx = React.useContext(AppContext);
 
-    const [name, setName] = React.useState('Your Name');
-    const [email, setEmail] = React.useState('your@email.com');
+    const [name, setName] = React.useState('');
+    const [email, setEmail] = React.useState('');
     const [rating, setRating] = React.useState(5);
 
     React.useEffect(() => {
@@ -38,8 +38,8 @@ export default function Profile() {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            <Avatar sx={{ width: 120, height: 120, fontSize: 40, fontWeight: 700, marginTop: 10 }} >{(name || 'A')[0].toLocaleUpperCase()}</Avatar>
-            <h1>{name}</h1>
+            <Avatar sx={{ width: 120, height: 120, fontSize: 40, fontWeight: 700, marginTop: 10 }} >{(name || ' ')[0].toLocaleUpperCase()}</Avatar>
+            <h1>{name || 'Your Name'}</h1>
             <Paper elevation={1} sx={{ width: '86%', padding: 3 }}>
                 <h3 style={{ margin: 0, marginBottom: 12 }}>Information</h3>
                 <Box>Email: <span style={{float: 'right'}}>{email || 'N/A'}</span></Box>
