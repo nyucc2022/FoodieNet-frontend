@@ -9,8 +9,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+html, body, #root, .base-container {
+  height: 100%;
+}
+
 .base-container {
-  height: 100vh;
   width: 100vw;
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
