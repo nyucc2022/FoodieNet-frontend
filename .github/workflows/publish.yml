@@ -27,4 +27,4 @@ jobs:
     - run: yarn
     - run: yarn build
     - name: Deploy
-      run: aws s3 sync build s3://cc-spring-2022-final --region us-east-1
+      run: aws s3 sync build s3://foodienet --region us-east-1
