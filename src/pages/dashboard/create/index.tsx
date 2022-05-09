@@ -32,10 +32,15 @@ export default function CreateGroup() {
         // eslint-disable-next-line
     }, 200), []);
 
-    React.useEffect(() => { savedParams = {
-        cuisine: [],
-        name: '',
-    } }, []);
+    React.useEffect(() => {
+        savedParams = {
+            cuisine: [],
+            name: '',
+        };
+        setSearchResult(null);
+        searchApiWithDebounce(savedParams);
+        // eslint-disable-next-line
+    }, []);
 
     const doSearch = async (param: string, params?: any) => {
         setSearchResult(null);
@@ -56,10 +61,11 @@ export default function CreateGroup() {
         if (data) {
             console.log('Params:', data);
             ctx.setBackDropStatus?.(true);
-            if ((await createGroup(data)).groupId) {
+            const groupId = (await createGroup(data)).groupId;
+            if (groupId) {
                 setSetupRestaurant(null);
                 ctx.openSnackBar?.("Success, Your group is created!", "success");
-                navigate('/dashboard/management');
+                navigate(`/dashboard/chat/${groupId}`);
             } else {
                 ctx.openSnackBar?.("Error: we have issue creating your group.", "error");
             }
