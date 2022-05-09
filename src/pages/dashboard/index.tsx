@@ -52,6 +52,7 @@ export default function Dashboard() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/create" element={<CreateGroup />} />
                     <Route path="/chat/*" element={<ChatRoom />} />
+                    <Route path="/profile/*" element={<Profile />} />
                 </Routes>
             </div>
             <BottomNavigation currentActive={tag} changeHandler={changeHandler} />

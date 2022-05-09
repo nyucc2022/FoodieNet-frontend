@@ -1,6 +1,6 @@
 import { currentUser, getUser, post } from './amplify';
 import * as Interface from './interface';
-import { call } from './utils';
+import { assign, call } from './utils';
 
 export const getMe = (): Interface.IUser => {
     const username = currentUser()?.username || '';
@@ -53,6 +53,8 @@ export const request = async <T=any>(endpoint: string, payload: object, should: 
     }
     return data;
 }
+
+assign("request", request);
 
 export const createGroup = async (params: Interface.ICreateGroup) => {
     return await request<{ groupId: string }>("/creategroup", params, 'object');
