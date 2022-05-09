@@ -7,6 +7,7 @@ import './index.css';
 
 import More from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
+import { call } from '../../api/utils';
 
 interface IChatCard {
     data: IGroupInfo;
@@ -26,6 +27,8 @@ export default function ChatCard({ data, classNames='', style={} }: IChatCard) {
     const handleClose = (key: string | null = null) => {
         if (key === 'chat') {
             navigate(`/dashboard/chat/${data.groupId}`);
+        } else if (key === 'quit') {
+            call('openSnackBar', 'You cannot leave group at this moment.', 'warning');
         }
 
         setAnchorEl(null);
@@ -33,9 +36,6 @@ export default function ChatCard({ data, classNames='', style={} }: IChatCard) {
 
     const options = [{
         id: 'chat',
-        title: 'Open Chat',
-    }, {
-        id: 'chat2',
         title: 'Open Chat',
     }, {
         id: 'divider',
