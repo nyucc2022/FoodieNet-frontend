@@ -10,7 +10,7 @@ export interface IRatingDialog {
 }
 
 export default function RatingDialog({ open, usernames, handleClose }: IRatingDialog) {
-    const data: { [id: string]: number } = {};
+    const [data, setData] = React.useState<{ [id: string]: number }>({});
 
     const onClose = () => handleClose(null);
     const onSubmit = () => handleClose(data);
@@ -31,7 +31,10 @@ export default function RatingDialog({ open, usernames, handleClose }: IRatingDi
                     <Rating
                         name={`${user}`}
                         onChange={(_: React.SyntheticEvent, newValue: number | null) => {
-                            data[user] = newValue || 0;
+                            setData({
+                                ...data,
+                                [user]: newValue || 0,
+                            });
                         }}
                     />
                 </Box>

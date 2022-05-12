@@ -109,7 +109,6 @@ export default function ChatRoom() {
         if (!data) {
             navigate(`/dashboard/management`);
         } else {
-            // TODO: submit rate
             ctx.setBackDropStatus?.(true);
             await rateUser(groupId, data);
             ctx.setBackDropStatus?.(false);
