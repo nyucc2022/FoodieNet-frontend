@@ -115,10 +115,11 @@ export const sendMessage = async (groupId: string, message: string): Promise<Int
     }, 'string');
 }
 
-export const rateUser = async (groupId: string, username: string, rate: number) => {
-    return await request("/rateuser", {
-        groupId, username, rate,
-    }, 'object');
+export const rateUser = async (groupId: string, data: {[name: string]: number}) => {
+    return await request("/reviewteammate", {
+        groupID: groupId,
+        groupUsers: Object.entries(data).map(([userName, star]) => ({userName, star})),
+      }, 'string');
 }
 
 export const getProfile = async (username: string): Promise<{userprofile: Interface.IUserProfile}> => {

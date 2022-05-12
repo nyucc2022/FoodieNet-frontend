@@ -111,7 +111,7 @@ export default function ChatRoom() {
         } else {
             // TODO: submit rate
             ctx.setBackDropStatus?.(true);
-            await rateUser(groupId, '', 1);
+            await rateUser(groupId, data);
             ctx.setBackDropStatus?.(false);
         }
     }
