@@ -55,7 +55,7 @@ export default function Profile() {
             alignItems: 'center',
         }}>
             {
-                profileUserName
+                !profileUserName
                 ? null
                 : <Box sx={{ width: 40, height: 40, position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', left: 20, top: 20 }} onClick={() => navigate(-1)}><ArrowBack /></Box>
             }
