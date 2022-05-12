@@ -54,7 +54,11 @@ export default function Profile() {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            <Box sx={{ width: 40, height: 40, position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', left: 20, top: 20 }} onClick={() => navigate(-1)}><ArrowBack /></Box>
+            {
+                profileUserName
+                ? null
+                : <Box sx={{ width: 40, height: 40, position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', left: 20, top: 20 }} onClick={() => navigate(-1)}><ArrowBack /></Box>
+            }
             <Avatar sx={{ width: 120, height: 120, fontSize: 40, fontWeight: 700, marginTop: 10 }} >{(name || ' ')[0].toLocaleUpperCase()}</Avatar>
             <h1>{name || 'N/A'}</h1>
             <Paper elevation={1} sx={{ width: '86%', padding: 3 }}>
