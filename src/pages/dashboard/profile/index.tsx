@@ -5,12 +5,15 @@ import AppContext from '../../../api/state';
 import { getUserInfo } from '../../../api/amplify';
 import { call } from '../../../api/utils';
 import { getProfile } from '../../../api/api';
-import { matchRoutes, useLocation } from 'react-router-dom';
+import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
+
+import { ArrowBack } from '@mui/icons-material';
 
 export default function Profile() {
     const ctx = React.useContext(AppContext);
 
     const location = useLocation();
+    const navigate = useNavigate ();
     const matches = matchRoutes([{ path: '/dashboard/profile/:username' }], location);
     const profileUserName = matches?.[0].params.username || '';
 
@@ -51,6 +54,7 @@ export default function Profile() {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
+            <Box sx={{ width: 40, height: 40, position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', left: 20, top: 20 }} onClick={() => navigate(-1)}><ArrowBack /></Box>
             <Avatar sx={{ width: 120, height: 120, fontSize: 40, fontWeight: 700, marginTop: 10 }} >{(name || ' ')[0].toLocaleUpperCase()}</Avatar>
             <h1>{name || 'N/A'}</h1>
             <Paper elevation={1} sx={{ width: '86%', padding: 3 }}>

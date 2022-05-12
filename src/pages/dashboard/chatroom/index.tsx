@@ -15,6 +15,15 @@ let lastSrollMessageId = '';
 
 const REFRESH = 100000;
 
+const AvatarLink = (username: string, bottomMargin=false) => (<Link key={username} href={`/dashboard/profile/${username}`}>
+    <Avatar sx={{
+            width: 34, height: 34,
+            fontSize: 16, fontWeight: 500,
+            mx: 1, ...(bottomMargin ? { mb: 1 } : {}),
+        }} >{(username || ' ')[0].toLocaleUpperCase()}
+    </Avatar>
+</Link>);
+
 export default function ChatRoom() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -116,6 +125,10 @@ export default function ChatRoom() {
             <Box sx={{ m: 0.5 }}><b>⏰ Schedule: </b>{new Date(1000 * (groupData?.startTime || (Date.now() / 1000))).toLocaleString()}</Box>
             <Box sx={{ m: 0.5 }}><b>🍚 Restaurant: </b>{groupData?.restaurant?.name} ({groupData?.restaurant?.cuisine})</Box>
             <Box sx={{ m: 0.5 }}><b>🚗 Location: </b><Link href={`https://www.google.com/maps/place/${groupData?.restaurant?.address?.replaceAll?.(' ', '+')},+NY+${groupData?.restaurant?.zipcode}`} target="_blank">{groupData?.restaurant?.address}, {groupData?.restaurant?.zipcode}</Link></Box>
+            <Box sx={{ m: 0.5 }}><b>🎉 Participants: </b></Box>
+            <Box sx={{ m: 0.5, mt: 1, mb: -0.5, display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                {groupData?.groupUsernameList?.map?.(u => AvatarLink(u, true))}
+            </Box>
         </Paper>
         <Box sx={{ padding: 2, marginTop: -2, paddingBottom: '60px', display: 'flex', flexDirection: 'column' }}>
             {(data || []).map((msg: IMessage) => {
@@ -140,11 +153,7 @@ export default function ChatRoom() {
                     }}>
                         {!isMe ?
                             !sameUser
-                            ? <Link href={`/dashboard/profile/${msg.username}`}><Avatar sx={{
-                                    width: 34, height: 34,
-                                    fontSize: 16, fontWeight: 500,
-                                    mx: 1,
-                                }} >{(msg.username || ' ')[0].toLocaleUpperCase()}</Avatar></Link>
+                            ? AvatarLink(msg.username)
                             : <Box sx={{width: 34, height: 34, mx: 1}}/>
                         : null}
                         <Box sx={{
