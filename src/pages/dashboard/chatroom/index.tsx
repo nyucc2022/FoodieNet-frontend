@@ -13,7 +13,7 @@ import RatingDialog from './rating';
 let init = 0;
 let lastSrollMessageId = '';
 
-const REFRESH = 100000;
+const REFRESH = 2000;
 
 const AvatarLink = (username: string, bottomMargin=false) => (<Link key={username} href={`/dashboard/profile/${username}`}>
     <Avatar sx={{
