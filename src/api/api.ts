@@ -121,7 +121,7 @@ export const rateUser = async (groupId: string, username: string, rate: number) 
     }, 'object');
 }
 
-export const getProfile = async (username: string): Promise<Interface.IUserProfile> => {
+export const getProfile = async (username: string): Promise<{userprofile: Interface.IUserProfile}> => {
     return await request("/getprofile", {
         username,
     }, 'object');

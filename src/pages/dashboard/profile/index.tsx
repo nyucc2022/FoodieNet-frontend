@@ -34,11 +34,11 @@ export default function Profile() {
                     setEmail(data.attributes.email);
                     profileName = data.username;
                 }
-                const profile = await getProfile(profileName);
-                setRating(profile.rating || 0);
+                const profile = (await getProfile(profileName)).userprofile;
+                setRating(profile?.rating || 0);
                 if (profileUserName) {
-                    setName(profile.username);
-                    setEmail(profile.email || 'N/A');
+                    setName(profile?.username);
+                    setEmail(profile?.email || 'N/A');
                 }
             } catch(err) {
                 ctx.openSnackBar?.(`${err}`, 'error');
