@@ -18,7 +18,7 @@ const App = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(
-    () => getTheme('light'),
+    () => getTheme(prefersDarkMode ? 'dark' : 'light'),
     [prefersDarkMode],
   );
   
