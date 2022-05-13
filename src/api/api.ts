@@ -66,7 +66,7 @@ export const postProcessGroupInfo = (gi: Interface.IGroupInfo): Interface.IGroup
     let state: Interface.IGroupInfo['state'] = 'Grouping Up';
     if (gi.status) {
         state = 'Ready To Go!';
-        if (parseInt(gi.startTime as any, 10) * 1000 + 2 * 60 * 60 * 1000 >= Date.now()) {
+        if (parseInt(gi.startTime as any, 10) * 1000 + 2 * 60 * 60 * 1000 <= Date.now()) {
             active = false;
             state = 'Rate You Mates';
             if (gi.reviewedUserList.includes(getMe().username)) {
