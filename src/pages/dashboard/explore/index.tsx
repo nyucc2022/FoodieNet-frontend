@@ -107,7 +107,7 @@ export default function Explore() {
                 </Box>: null}
             
             {searchResult?.filter(r => {
-                return !r.groupUsernameList.includes(getMe().username);
+                return !r.groupUsernameList.includes(getMe().username?.toLocaleLowerCase());
             }).map(r => (<Paper
                 key={r.groupId}
                 sx={{ display: 'flex', flexDirection: 'column', marginBottom: 2, }}
