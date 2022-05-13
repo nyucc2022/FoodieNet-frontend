@@ -6,7 +6,7 @@ import Title from '../../../components/title';
 import SearchIcon from '@mui/icons-material/Search'
 import { IGroupInfo } from '../../../api/interface';
 import { getMe, joinGroup, searchGroups } from '../../../api/api';
-import { CreditScore, FoodBank, LocationOn } from '@mui/icons-material';
+import { CreditScore, Group, FoodBank, LocationOn } from '@mui/icons-material';
 import AppContext from '../../../api/state';
 import PillSelector from '../../../components/pillSelector';
 import PillRanger from '../../../components/pillRanger';
@@ -126,6 +126,7 @@ export default function Explore() {
                     <Box sx={{ marginY: 0.25, textAlign: 'left', fontSize: 12 }}>{r.restaurant.name}</Box>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', marginTop: 0.5, marginLeft: -0.8, marginBottom: -0.8 }}>
                         <Chip icon={<CreditScore />} label={`${r.currentGroupCredit}`} size="small" color="success" sx={{ margin: 0.5 }} />
+                        <Chip icon={<Group />} label={`${r.totalSize}`} size="small" sx={{ margin: 0.5 }} />
                         <Chip icon={<FoodBank />} label={r.restaurant.cuisine} size="small" sx={{ margin: 0.5 }} />
                     </Box>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', marginTop: 0.5, marginLeft: -0.8, marginBottom: -0.8 }}>
