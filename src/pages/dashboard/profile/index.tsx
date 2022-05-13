@@ -42,7 +42,7 @@ export default function Profile() {
                 }
             } catch(err) {
                 ctx.openSnackBar?.(`${err}`, 'error');
-                ctx.logout?.();
+                ctx.logout?.(false, '/dashboard/profile');
             }
         })();
         // eslint-disable-next-line

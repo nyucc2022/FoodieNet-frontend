@@ -24,7 +24,7 @@ export const request = async <T=any>(endpoint: string, payload: object, should: 
             call('openSnackBar', 'Cannot fetch api, please check your network.', 'error');
         } else {
             call('openSnackBar', 'User session expired, please log in again.', 'error');
-            call('logout');
+            // call('logout');
         }
     }
 
@@ -69,7 +69,7 @@ export const postProcessGroupInfo = (gi: Interface.IGroupInfo): Interface.IGroup
         if (parseInt(gi.startTime as any, 10) * 1000 + 2 * 60 * 60 * 1000 <= Date.now()) {
             active = false;
             state = 'Rate You Mates';
-            if (gi.reviewedUserList.includes(getMe().username)) {
+            if (gi.reviewedUserList.includes(getMe().username?.toLocaleLowerCase())) {
                 state = 'Done';
             }
         }

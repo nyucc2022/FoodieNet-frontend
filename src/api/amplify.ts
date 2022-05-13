@@ -31,7 +31,7 @@ export const currentUser = () => pool.user;
 export const post = async (path: string, body: any) => {
     Object.keys(body).forEach(key => {
         if (body[key] === '{{@username}}') {
-            body[key] = pool.user?.getUsername?.() || '';
+            body[key] = pool.user?.getUsername?.()?.toLocaleLowerCase?.() || '';
         } 
     });
     return API.post("default", path, {

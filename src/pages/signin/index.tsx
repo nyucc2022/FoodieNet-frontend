@@ -16,6 +16,7 @@ import { signIn } from '../../api/amplify';
 import AppContext from '../../api/state';
 
 export default function SignIn() {
+    const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '';
     const ctx = React.useContext(AppContext);
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -27,7 +28,7 @@ export default function SignIn() {
         try {
             const user = await signIn(email, password);
             ctx.openSnackBar?.(`Success, welcome back ${user.getUsername()}!`, "success");
-            ctx.navigate?.('/dashboard/explore');
+            ctx.navigate?.(redirectTo || `/dashboard/explore`);
         } catch(err) {
             ctx.openSnackBar?.(`Error: ${err}`, "error");
         }
@@ -96,7 +97,7 @@ export default function SignIn() {
                                 </Link>
                             </Grid>
                             <Grid item>
-                                <Link href="/signup" variant="body2">
+                                <Link href={`/signup${redirectTo ? `?redirect=${redirectTo}` : ''}`} variant="body2">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>

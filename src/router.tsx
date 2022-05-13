@@ -30,7 +30,9 @@ export default function Router() {
   React.useEffect(() => {
     getUser().then(user => {
       if (!user && location.pathname.startsWith('/dashboard')) {
-        navigate('/');
+        navigate(`/signin?redirect=${location.pathname}`);
+      } else if (user && ['/', '/signin', '/signup'].includes(location.pathname)) {
+        navigate(`/dashboard/management`);
       }
     });
     // eslint-disable-next-line
@@ -43,10 +45,10 @@ export default function Router() {
       setSnackBarMessage(message);
       setSnackBarStatus(true);
     },
-    logout: async (showMessage = false) => {
+    logout: async (showMessage = false, backTo='') => {
       try {
         await signOut();
-        navigate('/');
+        navigate(`/signin${backTo ? `?redirect=${backTo}` : ''}`);
         if (showMessage) {
           call("openSnackBar", "Success, you are logged out!");
         }
