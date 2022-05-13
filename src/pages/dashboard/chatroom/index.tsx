@@ -105,13 +105,18 @@ export default function ChatRoom() {
     }
 
     const handleRateClose = async (data: { [name: number]: number } | null) => {
-        setRatingOpen(false);
         if (!data) {
+            setRatingOpen(false);
             navigate(`/dashboard/management`);
         } else {
+            if (!Object.keys(data).length) {
+                call("openSnackBar", "You need to rate at least one user.", "error")
+                return;
+            }
             ctx.setBackDropStatus?.(true);
             await rateUser(groupId, data);
             ctx.setBackDropStatus?.(false);
+            setRatingOpen(false);
         }
     }
 
