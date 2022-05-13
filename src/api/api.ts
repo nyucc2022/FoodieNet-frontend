@@ -8,10 +8,10 @@ export const getMe = (): Interface.IUser => {
 }
 
 export const isMe = (user?: string | Interface.IUser): boolean => {
-    const me = getMe().username;
+    const me = getMe().username?.toLocaleLowerCase() || '';
     return typeof user === 'string'
-        ? me === user
-        : me === user?.username;
+        ? me === user.toLocaleLowerCase()
+        : me === user?.username?.toLocaleLowerCase();
 }
 
 export const request = async <T=any>(endpoint: string, payload: object, should: 'string' | 'number' | 'object' | 'array' | 'boolean'): Promise<T> => {
