@@ -9,11 +9,11 @@ import BaseContainer from '../../components/baseContainer';
 import {Stack} from "@mui/material";
 
 export default function Landing() {
-    return (<BaseContainer style={{ background: 'black', display: 'flex', alignItems: 'center' }}>
+    return (<BaseContainer style={{display: 'flex', alignItems: 'center' }}>
         <div style={{ flex: 1 }}>
             <Box component="span" sx={{ display: 'flex', p: 2, width: '100%', justifyContent: 'center' }}>
                 <Typography component="div">
-                <Box sx={{ fontSize: 'h3.fontSize', m: 1, color: 'white', fontFamily: 'Ubuntu' }}>FoodieNet</Box>
+                <Box sx={{ fontSize: 'h3.fontSize', m: 1, fontFamily: 'Ubuntu' }}>FoodieNet</Box>
                 </Typography>
             </Box>
 

@@ -46,7 +46,7 @@ export default function SignUp() {
     };
 
     return (
-        <BaseContainer style={{ background: 'black' }}>
+        <BaseContainer>
             <Container component="main" maxWidth="xs"  sx={{
                 height: '100%',
                 display: 'flex',
