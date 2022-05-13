@@ -125,7 +125,7 @@ export default function Explore() {
                     <Box component="h4" sx={{ margin: 0, textAlign: 'left' }}>{r.groupName}</Box>
                     <Box sx={{ marginY: 0.25, textAlign: 'left', fontSize: 12 }}>{r.restaurant.name}</Box>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', marginTop: 0.5, marginLeft: -0.8, marginBottom: -0.8 }}>
-                        <Chip icon={<CreditScore />} label={`${r.currentGroupCredit}`} size="small" color="success" sx={{ margin: 0.5 }} />
+                        <Chip icon={<CreditScore />} label={`${r.currentGroupCredit || 'N/A'}`} size="small" color={r.currentGroupCredit >= 3 ? "success" : (r.currentGroupCredit >= 0.5 ? "warning" : "default")} sx={{ margin: 0.5 }} />
                         <Chip icon={<Group />} label={`${r.totalSize}`} size="small" sx={{ margin: 0.5 }} />
                         <Chip icon={<FoodBank />} label={r.restaurant.cuisine} size="small" sx={{ margin: 0.5 }} />
                     </Box>
